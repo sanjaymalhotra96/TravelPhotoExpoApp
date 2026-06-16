@@ -11,16 +11,17 @@ import { PasswordField } from '../../components/forms/PasswordField';
 import { LoadingButton } from '../../components/ui/LoadingButton';
 import { Toast } from '../../components/common/Toast';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 // Validation schema
 const registerSchema = z
   .object({
-    email: z.string().email('Please enter a valid email address'),
-    password: z.string().min(6, 'Password must be at least 6 characters'),
-    confirmPassword: z.string().min(6, 'Confirm password is required'),
+    email: z.string().email(t('auth.validation.email')),
+    password: z.string().min(6, t('auth.validation.password')),
+    confirmPassword: z.string().min(6, t('auth.validation.confirmPasswordRequired')),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: t('auth.validation.passwordMatch'),
     path: ['confirmPassword'],
   });
 
@@ -55,12 +56,9 @@ export default function RegisterScreen() {
   const onSubmit = async (data: RegisterFormValues) => {
     try {
       await registerUser({ email: data.email, password: data.password });
-      showToast(
-        'Account created! Check your email to confirm your account, then log in.',
-        'success'
-      );
+      showToast(t('auth.register.successToast'), 'success');
     } catch (e: any) {
-      showToast(e?.message || 'Registration failed. Please try again.', 'error');
+      showToast(e?.message || t('auth.register.errorToast'), 'error');
     }
   };
 
@@ -84,10 +82,10 @@ export default function RegisterScreen() {
             <Icons.Sparkles size={32} color="#ffffff" />
           </View>
           <Text className="text-light-text dark:text-dark-text text-3xl font-black tracking-tight mb-1 text-center">
-            Create Account
+            {t('auth.register.title')}
           </Text>
           <Text className="text-light-muted dark:text-dark-muted text-sm text-center">
-            Sign up to unlock travel locations
+            {t('auth.register.subtitle')}
           </Text>
         </View>
 
@@ -95,8 +93,8 @@ export default function RegisterScreen() {
           <TextField
             name="email"
             control={control}
-            label="Email Address"
-            placeholder="example@domain.com"
+            label={t('auth.register.emailLabel')}
+            placeholder={t('auth.register.emailPlaceholder')}
             keyboardType="email-address"
             error={errors.email?.message}
             leftIcon={<Icons.Mail size={18} className="text-light-muted dark:text-dark-muted" />}
@@ -105,8 +103,8 @@ export default function RegisterScreen() {
           <PasswordField
             name="password"
             control={control}
-            label="Password"
-            placeholder="••••••••"
+            label={t('auth.register.passwordLabel')}
+            placeholder={t('auth.register.passwordPlaceholder')}
             error={errors.password?.message}
             leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
           />
@@ -114,8 +112,8 @@ export default function RegisterScreen() {
           <PasswordField
             name="confirmPassword"
             control={control}
-            label="Confirm Password"
-            placeholder="••••••••"
+            label={t('auth.register.confirmPasswordLabel')}
+            placeholder={t('auth.register.passwordPlaceholder')}
             error={errors.confirmPassword?.message}
             leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
           />
@@ -123,9 +121,9 @@ export default function RegisterScreen() {
           <View className="mt-4">
             <LoadingButton
               onPress={handleSubmit(onSubmit)}
-              title="Sign Up"
+              title={t('auth.register.registerButton')}
               loading={isPending}
-              loadingTitle="Creating account..."
+              loadingTitle={t('auth.register.registering')}
             />
           </View>
         </View>
@@ -133,12 +131,12 @@ export default function RegisterScreen() {
         {/* Login Link */}
         <View className="flex-row justify-center items-center pb-8">
           <Text className="text-light-muted dark:text-dark-muted text-sm mr-1.5">
-            Already have an account?
+            {t('auth.register.hasAccount')}
           </Text>
           <Link href="/(auth)/login" asChild>
             <Pressable className="active:opacity-50">
               <Text className="text-primary-500 dark:text-primary-400 font-bold text-sm">
-                Log In
+                {t('auth.register.loginLink')}
               </Text>
             </Pressable>
           </Link>

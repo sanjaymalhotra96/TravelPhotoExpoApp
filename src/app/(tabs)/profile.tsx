@@ -10,6 +10,7 @@ import { ConfirmationDialog } from '../../components/dialogs/ConfirmationDialog'
 import { EmptyState } from '../../components/common/EmptyState';
 import { ErrorState } from '../../components/common/ErrorState';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 export default function ProfileScreen() {
   const { data: profileData, isLoading, error, refetch } = useProfile();
@@ -46,7 +47,7 @@ export default function ProfileScreen() {
     return (
       <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center">
         <ActivityIndicator color="#8b5cf6" size="large" />
-        <Text className="text-light-muted dark:text-dark-muted text-sm mt-3">Loading profile data...</Text>
+        <Text className="text-light-muted dark:text-dark-muted text-sm mt-3">{t('tabs.profile.loading')}</Text>
       </SafeAreaView>
     );
   }
@@ -63,7 +64,7 @@ export default function ProfileScreen() {
       {/* Custom Header */}
       <View className="w-full flex-row items-center justify-between px-5 py-4 border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-card">
         <Text className="text-light-text dark:text-dark-text text-xl font-bold tracking-tight">
-          Profile Settings
+          {t('tabs.profile.title')}
         </Text>
         
         <Pressable
@@ -74,7 +75,7 @@ export default function ProfileScreen() {
           className="flex-row items-center bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-full border border-red-100 dark:border-red-950 active:bg-red-100 dark:active:bg-red-900/35"
         >
           <Icons.LogOut size={16} color="#ef4444" className="mr-2" />
-          <Text className="text-red-500 font-bold text-xs">Logout</Text>
+          <Text className="text-red-500 font-bold text-xs">{t('tabs.profile.signOutBtn')}</Text>
         </Pressable>
       </View>
 
@@ -99,11 +100,11 @@ export default function ProfileScreen() {
             <View className="flex-row border-t border-light-border dark:border-dark-border pt-4 w-full justify-around">
               <View className="items-center">
                 <Text className="text-primary-500 font-extrabold text-lg">{history.length}</Text>
-                <Text className="text-light-muted dark:text-dark-muted text-xs">Generations</Text>
+                <Text className="text-light-muted dark:text-dark-muted text-xs">{t('tabs.profile.statsGenerations')}</Text>
               </View>
               <View className="items-center">
-                <Text className="text-primary-500 font-extrabold text-lg">Active</Text>
-                <Text className="text-light-muted dark:text-dark-muted text-xs">Status</Text>
+                <Text className="text-primary-500 font-extrabold text-lg">{t('tabs.profile.statsActive')}</Text>
+                <Text className="text-light-muted dark:text-dark-muted text-xs">{t('tabs.profile.statsStatus')}</Text>
               </View>
             </View>
           </View>
@@ -113,7 +114,7 @@ export default function ProfileScreen() {
         <View className="flex-row items-center mb-4">
           <Icons.History size={18} className="text-light-text dark:text-dark-text mr-2" />
           <Text className="text-light-text dark:text-dark-text font-extrabold text-lg">
-            Generation History
+            {t('tabs.profile.creationsHeader')}
           </Text>
         </View>
 
@@ -130,7 +131,7 @@ export default function ProfileScreen() {
           </View>
         ) : (
           <View className="py-8">
-            <EmptyState message="You haven't generated any travel photos yet. Head to the Studio tab to start!" />
+            <EmptyState message={t('tabs.profile.emptyCreations')} />
           </View>
         )}
 
@@ -146,9 +147,9 @@ export default function ProfileScreen() {
       {/* Confirmation warning for logout */}
       <ConfirmationDialog
         visible={logoutDialogVisible}
-        title="Confirm Logout"
-        description="Are you sure you want to end your current authentication session?"
-        confirmText="Logout"
+        title={t('tabs.profile.logoutConfirmTitle')}
+        description={t('tabs.profile.logoutConfirmDesc')}
+        confirmText={t('tabs.profile.signOutBtn')}
         confirmVariant="danger"
         onConfirm={handleConfirmLogout}
         onCancel={() => setLogoutDialogVisible(false)}

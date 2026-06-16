@@ -12,6 +12,7 @@ import { ImagePickerHelper, SelectedImage } from '../../utils/imagePicker';
 import { FullScreenLoader } from '../../components/loaders/FullScreenLoader';
 import { Icons } from '../../theme';
 import { setGenerationParams } from '../../store/generationStore';
+import { t } from '../../utils/i18n';
 
 export default function GenerateSelectScreen() {
   const router = useRouter();
@@ -68,12 +69,12 @@ export default function GenerateSelectScreen() {
   };
 
   if (isLoading) {
-    return <FullScreenLoader message="Loading target template specs..." />;
+    return <FullScreenLoader message={t('generate.loadingSpecs')} />;
   }
 
   return (
     <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
-      <ScreenHeader title="AI Generation Setup" showBackButton onBackPress={() => router.back()} />
+      <ScreenHeader title={t('generate.setupTitle')} showBackButton onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 px-5 pt-6">
         <View className="mb-5 bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-4 rounded-2xl flex-row items-center">
@@ -81,7 +82,7 @@ export default function GenerateSelectScreen() {
             <Icons.Sparkles size={20} color="#8b5cf6" />
           </View>
           <View className="flex-1">
-            <Text className="text-light-muted dark:text-dark-muted text-xs">Target Template</Text>
+            <Text className="text-light-muted dark:text-dark-muted text-xs">{t('generate.targetTemplate')}</Text>
             <Text className="text-light-text dark:text-dark-text font-bold text-base">{template?.name}</Text>
           </View>
         </View>
@@ -98,10 +99,10 @@ export default function GenerateSelectScreen() {
                 <Icons.Camera size={40} color="#8b5cf6" />
               </View>
               <Text className="text-light-text dark:text-dark-text font-bold text-lg mb-1.5 text-center">
-                Add Portrait Photo
+                {t('generate.addPortraitTitle')}
               </Text>
               <Text className="text-light-muted dark:text-dark-muted text-sm text-center max-w-[70%]">
-                Take a picture or upload from gallery. Headshots work best!
+                {t('generate.addPortraitDesc')}
               </Text>
             </Pressable>
           )}
@@ -110,7 +111,7 @@ export default function GenerateSelectScreen() {
         <View className="pb-8 mt-auto">
           <PrimaryButton
             onPress={handleContinue}
-            title="Continue to Generate"
+            title={t('generate.continueBtn')}
             disabled={!selectedImage}
             icon={<Icons.Sparkles size={18} color="#ffffff" />}
           />

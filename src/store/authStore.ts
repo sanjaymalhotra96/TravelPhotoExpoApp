@@ -43,7 +43,13 @@ export const useAuthStore = create<AuthState>((set) => ({
   logout: async () => {
     console.log('[authStore] logout called. Setting explicitlyLoggedOut to true...');
     explicitlyLoggedOut = true;
-    set({ user: null, session: null, isAuthenticated: false, isLoading: false });
+    set({ 
+      user: null, 
+      session: null, 
+      isAuthenticated: false, 
+      isLoading: false,
+      isRecoveringPassword: false 
+    });
     
     try {
       console.log('[authStore] calling supabase.auth.signOut({ scope: "local" }) in background...');
@@ -55,6 +61,17 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
 }));
 
+// ─── pendingRecovery flag ────────────────────────────────────────────────────
+// _layout.tsx sets this to true SYNCHRONOUSLY before calling
+// exchangeCodeForSession(). That way, when onAuthStateChange fires SIGNED_IN
+// during the code exchange, we intercept it here and do NOT call setSession(),
+// keeping isAuthenticated=false so the auth guard never redirects to dashboard.
+let pendingRecovery = false;
+export function setPendingRecovery(val: boolean): void {
+  console.log(`[authStore] setPendingRecovery → ${val}`);
+  pendingRecovery = val;
+}
+
 // Setup authentication change listener to dynamically manage and synchronize the session
 supabase.auth.onAuthStateChange((event, session) => {
   if (__DEV__) {
@@ -65,15 +82,21 @@ supabase.auth.onAuthStateChange((event, session) => {
     console.log('[authStore] Ignoring session restore event because user explicitly logged out.');
     return;
   }
-  
-  useAuthStore.getState().setSession(session);
-  useAuthStore.getState().setLoading(false);
 
-  if (event === 'PASSWORD_RECOVERY') {
-    console.log('[authStore] PASSWORD_RECOVERY event detected. Redirecting to reset-password screen...');
+  // Check for recovery BEFORE calling setSession().
+  // If setSession() runs first, isAuthenticated becomes true and the auth
+  // guard redirects to dashboard before the recovery route can fire.
+  if (event === 'PASSWORD_RECOVERY' || (pendingRecovery && event === 'SIGNED_IN')) {
+    console.log(`[authStore] ${event} detected — routing to reset-password (pendingRecovery=${pendingRecovery})`);
     useAuthStore.getState().setRecoveringPassword(true);
+    useAuthStore.getState().setLoading(false);
     setTimeout(() => {
       router.replace('/(auth)/reset-password');
     }, 0);
+    return; // Do NOT call setSession() — isAuthenticated stays false
   }
+
+  // Normal (non-recovery) session handling
+  useAuthStore.getState().setSession(session);
+  useAuthStore.getState().setLoading(false);
 });

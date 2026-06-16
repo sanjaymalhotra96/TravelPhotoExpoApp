@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 interface EmptyStateProps {
   message?: string;
@@ -8,7 +9,7 @@ interface EmptyStateProps {
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
-  message = 'No records found at this time.',
+  message = t('common.emptyMessage'),
   icon,
 }) => {
   return (
@@ -19,7 +20,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
         </View>
         
         <Text className="text-light-text dark:text-dark-text font-bold text-lg mb-2 text-center">
-          No Results Found
+          {t('common.emptyTitle')}
         </Text>
         
         <Text className="text-light-muted dark:text-dark-muted text-sm text-center leading-relaxed">

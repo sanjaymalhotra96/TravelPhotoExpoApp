@@ -10,6 +10,7 @@ import { FullScreenLoader } from '../../components/loaders/FullScreenLoader';
 import { ErrorState } from '../../components/common/ErrorState';
 import { EmptyState } from '../../components/common/EmptyState';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function DashboardScreen() {
   };
 
   if (isLoading) {
-    return <FullScreenLoader message="Retrieving travel catalogs..." />;
+    return <FullScreenLoader message={t('tabs.studio.loading')} />;
   }
 
   if (error) {
@@ -40,7 +41,7 @@ export default function DashboardScreen() {
             <Icons.Sparkles size={18} color="#ffffff" />
           </View>
           <Text className="text-light-text dark:text-dark-text text-xl font-bold tracking-tight">
-            Travel Studio
+            {t('tabs.studio.title')}
           </Text>
         </View>
 
@@ -69,10 +70,10 @@ export default function DashboardScreen() {
             ListHeaderComponent={() => (
               <View className="mb-5">
                 <Text className="text-light-text dark:text-dark-text text-2xl font-black tracking-tight mb-1">
-                  Choose Destination
+                  {t('tabs.studio.chooseDestination')}
                 </Text>
                 <Text className="text-light-muted dark:text-dark-muted text-sm leading-relaxed">
-                  Select a scenic category below, add a photo, and teletransport yourself anywhere.
+                  {t('tabs.studio.subtitle')}
                 </Text>
               </View>
             )}

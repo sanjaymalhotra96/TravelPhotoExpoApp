@@ -6,26 +6,27 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
-import { useAuthStore } from '../../store/authStore';
+import { useAuthStore, setPendingRecovery } from '../../store/authStore';
 import { PasswordField } from '../../components/forms/PasswordField';
 import { LoadingButton } from '../../components/ui/LoadingButton';
 import { Toast } from '../../components/common/Toast';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 // Password recovery schema with strength validation
 const resetPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(8, 'Password must be at least 8 characters')
-      .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-      .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-      .regex(/[0-9]/, 'Password must contain at least one number')
-      .regex(/[^a-zA-Z0-9]/, 'Password must contain at least one special character'),
-    confirmPassword: z.string().min(1, 'Please confirm your new password'),
+      .min(8, t('auth.resetPassword.validation.min8'))
+      .regex(/[a-z]/, t('auth.resetPassword.validation.lowercase'))
+      .regex(/[A-Z]/, t('auth.resetPassword.validation.uppercase'))
+      .regex(/[0-9]/, t('auth.resetPassword.validation.number'))
+      .regex(/[^a-zA-Z0-9]/, t('auth.resetPassword.validation.special')),
+    confirmPassword: z.string().min(1, t('auth.resetPassword.validation.confirm')),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: 'Passwords do not match',
+    message: t('auth.validation.passwordMatch'),
     path: ['confirmPassword'],
   });
 
@@ -49,26 +50,32 @@ export default function ResetPasswordScreen() {
     },
   });
 
+  // Clear pendingRecovery if user leaves this screen without completing the reset.
+  // This prevents the flag from staying true and blocking future normal logins.
   useEffect(() => {
-    const verifySession = async () => {
-      const { data } = await supabase.auth.getSession();
-      console.log('[ResetPassword] Active session details on mount:', {
-        hasSession: !!data?.session,
-        userEmail: data?.session?.user?.email,
-        expiresAt: data?.session?.expires_at,
-      });
+    return () => {
+      setPendingRecovery(false);
+    };
+  }, []);
 
-      if (!data?.session) {
-        console.warn('[ResetPassword] Session missing on mount. Redirecting to forgot-password...');
-        useAuthStore.getState().setRecoveringPassword(false);
-        showToast('No active recovery session found. Please request a new link.', 'error');
+  // Guard against unauthorized direct access.
+  // Instead of querying Supabase for an active session (which fails due to PKCE code exchange race conditions),
+  // we rely on our authStore's `isRecoveringPassword` state which is set immediately when the deep link is detected.
+  useEffect(() => {
+    const checkRecoveryState = () => {
+      const isRecovering = useAuthStore.getState().isRecoveringPassword;
+      if (!isRecovering) {
+        console.warn('[ResetPassword] Not in recovery mode. Redirecting to forgot-password...');
+        setPendingRecovery(false);
+        showToast(t('auth.resetPassword.sessionErrorToast'), 'error');
         setTimeout(() => {
           router.replace('/(auth)/forgot-password');
-        }, 3000);
+        }, 1500);
       }
     };
-
-    verifySession();
+    
+    // Give it a tiny delay to ensure zustand state propagates from _layout.tsx
+    setTimeout(checkRecoveryState, 500);
   }, []);
 
   const passwordValue = useWatch({ control, name: 'password', defaultValue: '' });
@@ -81,11 +88,11 @@ export default function ResetPasswordScreen() {
 
   // Live password strength checks
   const strengthChecks = [
-    { label: 'At least 8 characters', met: passwordValue.length >= 8 },
-    { label: 'One uppercase letter', met: /[A-Z]/.test(passwordValue) },
-    { label: 'One lowercase letter', met: /[a-z]/.test(passwordValue) },
-    { label: 'One number', met: /[0-9]/.test(passwordValue) },
-    { label: 'One special character', met: /[^a-zA-Z0-9]/.test(passwordValue) },
+    { label: t('auth.resetPassword.reqLength'), met: passwordValue.length >= 8 },
+    { label: t('auth.resetPassword.reqUppercase'), met: /[A-Z]/.test(passwordValue) },
+    { label: t('auth.resetPassword.reqLowercase'), met: /[a-z]/.test(passwordValue) },
+    { label: t('auth.resetPassword.reqNumber'), met: /[0-9]/.test(passwordValue) },
+    { label: t('auth.resetPassword.reqSpecial'), met: /[^a-zA-Z0-9]/.test(passwordValue) },
   ];
 
   const onSubmit = async (data: ResetPasswordValues) => {
@@ -98,10 +105,12 @@ export default function ResetPasswordScreen() {
 
       if (error) throw error;
 
-      showToast('Password updated successfully! Redirecting to login...', 'success');
+      showToast(t('auth.resetPassword.successToast'), 'success');
 
-      // Clear the temporary recovery session and status from the store
-      console.log('[ResetPassword] Logging out and resetting recovery flag...');
+      // Clear all recovery state BEFORE logout so the SIGNED_OUT event
+      // is not accidentally treated as a new recovery event.
+      console.log('[ResetPassword] Clearing recovery flags and signing out...');
+      setPendingRecovery(false);
       useAuthStore.getState().setRecoveringPassword(false);
       await useAuthStore.getState().logout();
 
@@ -111,7 +120,7 @@ export default function ResetPasswordScreen() {
       }, 2000);
     } catch (e: any) {
       console.error('[ResetPassword] Password update failed:', e);
-      showToast(e?.message || 'Failed to update password. Please try again.', 'error');
+      showToast(e?.message || t('auth.resetPassword.errorToast'), 'error');
     } finally {
       setLoading(false);
     }
@@ -136,10 +145,10 @@ export default function ResetPasswordScreen() {
             <Icons.Lock size={32} color="#ffffff" />
           </View>
           <Text className="text-light-text dark:text-dark-text text-3xl font-black tracking-tight mb-1 text-center">
-            Create New Password
+            {t('auth.resetPassword.title')}
           </Text>
           <Text className="text-light-muted dark:text-dark-muted text-sm text-center px-4">
-            Please enter your new password below. Ensure it meets the security strength requirements.
+            {t('auth.resetPassword.subtitle')}
           </Text>
         </View>
 
@@ -147,8 +156,8 @@ export default function ResetPasswordScreen() {
           <PasswordField
             name="password"
             control={control}
-            label="New Password"
-            placeholder="••••••••"
+            label={t('auth.resetPassword.newPasswordLabel')}
+            placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
             error={errors.password?.message}
             leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
           />
@@ -156,7 +165,7 @@ export default function ResetPasswordScreen() {
           {/* Password strength checklist */}
           <View className="mb-5 px-1">
             <Text className="text-light-text dark:text-dark-text font-bold text-xs mb-2">
-              Password Requirements:
+              {t('auth.resetPassword.requirementsTitle')}
             </Text>
             {strengthChecks.map((check, idx) => (
               <View key={idx} className="flex-row items-center mb-1">
@@ -171,8 +180,8 @@ export default function ResetPasswordScreen() {
           <PasswordField
             name="confirmPassword"
             control={control}
-            label="Confirm Password"
-            placeholder="••••••••"
+            label={t('auth.resetPassword.confirmPasswordLabel')}
+            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
             error={errors.confirmPassword?.message}
             leftIcon={<Icons.Privacy size={18} className="text-light-muted dark:text-dark-muted" />}
           />
@@ -180,9 +189,9 @@ export default function ResetPasswordScreen() {
           <View className="mt-4">
             <LoadingButton
               onPress={handleSubmit(onSubmit)}
-              title="Reset Password"
+              title={t('auth.resetPassword.resetButton')}
               loading={loading}
-              loadingTitle="Updating..."
+              loadingTitle={t('auth.resetPassword.resetting')}
             />
           </View>
         </View>

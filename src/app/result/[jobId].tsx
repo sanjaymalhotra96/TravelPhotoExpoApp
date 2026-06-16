@@ -12,6 +12,7 @@ import { PrimaryButton } from '../../components/ui/PrimaryButton';
 import { SecondaryButton } from '../../components/ui/SecondaryButton';
 import { LoadingOverlay } from '../../components/loaders/LoadingOverlay';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -78,13 +79,13 @@ export default function ResultScreen() {
       return result.uri;
     } catch (e: any) {
       console.error('[ResultScreen] Download error:', e);
-      Alert.alert('Download Error', e?.message || 'Could not download the image.');
+      Alert.alert(t('generate.resultDownloadError'), e?.message || t('generate.resultDownloadErrorDesc'));
       return null;
     }
   };
 
   const handleDownload = async () => {
-    setLoadingMsg('Saving image...');
+    setLoadingMsg(t('generate.resultSaving'));
     setLoading(true);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
@@ -93,15 +94,15 @@ export default function ResultScreen() {
 
     if (localUri) {
       Alert.alert(
-        '✅ Saved!',
-        `Your AI travel photo has been saved to device cache:\n${localUri}`,
-        [{ text: 'OK' }]
+        t('generate.resultSavedTitle'),
+        t('generate.resultSavedDesc', { localUri }),
+        [{ text: t('common.ok') }]
       );
     }
   };
 
   const handleShare = async () => {
-    setLoadingMsg('Preparing share...');
+    setLoadingMsg(t('generate.resultPreparingShare'));
     setLoading(true);
 
     const localUri = await downloadToLocalCache();
@@ -112,7 +113,7 @@ export default function ResultScreen() {
       if (canShare) {
         await Sharing.shareAsync(localUri);
       } else {
-        Alert.alert('Sharing Unavailable', 'Sharing is not supported on this platform.');
+        Alert.alert(t('generate.resultShareError'), t('generate.resultShareErrorDesc'));
       }
     }
   };
@@ -125,7 +126,7 @@ export default function ResultScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
-      <ScreenHeader title="Your AI Travel Photo" />
+      <ScreenHeader title={t('generate.resultHeader')} />
 
       <ScrollView
         contentContainerStyle={{ flexGrow: 1 }}
@@ -159,11 +160,11 @@ export default function ResultScreen() {
                   </View>
                   <View className="bg-primary-600/90 px-4 py-1.5 rounded-full shadow-md mb-1">
                     <Text className="text-white text-[10px] font-black uppercase tracking-widest">
-                      🤖 Demo Preview
+                      {t('generate.resultDemoBadge')}
                     </Text>
                   </View>
                   <Text className="text-white/70 text-[10px] text-center mt-1 leading-relaxed max-w-[200px]">
-                    Add a Replicate API key to see your{'\n'}face placed into this scene by real AI
+                    {t('generate.resultDemoDesc')}
                   </Text>
                 </View>
               </View>
@@ -173,7 +174,7 @@ export default function ResultScreen() {
             {!isMockMode ? (
               <View className="absolute top-4 right-4 bg-emerald-500/90 px-3 py-1.5 rounded-full shadow-md">
                 <Text className="text-white text-[10px] font-black uppercase tracking-widest">
-                  ✨ AI Generated
+                  {t('generate.resultAiGenerated')}
                 </Text>
               </View>
             ) : null}
@@ -185,10 +186,10 @@ export default function ResultScreen() {
               </View>
               <View className="flex-1">
                 <Text className="text-white/60 text-[10px] font-semibold uppercase tracking-wider">
-                  Travel Destination
+                  {t('generate.resultTravelDestination')}
                 </Text>
                 <Text className="text-white text-sm font-bold">
-                  {template?.name ?? 'Custom Scene'}
+                  {template?.name ?? t('generate.resultCustomScene')}
                 </Text>
               </View>
             </View>
@@ -200,11 +201,10 @@ export default function ResultScreen() {
               <Icons.Warning size={16} color="#d97706" style={{ marginTop: 1, marginRight: 8 }} />
               <View className="flex-1">
                 <Text className="text-amber-700 dark:text-amber-400 font-bold text-xs mb-0.5">
-                  Demo Mode Active
+                  {t('generate.resultDemoActiveTitle')}
                 </Text>
                 <Text className="text-amber-600 dark:text-amber-500 text-xs leading-relaxed">
-                  Your face is shown in a circle overlay. To see yourself placed into the actual scene, add{' '}
-                  <Text className="font-mono font-bold">EXPO_PUBLIC_REPLICATE_API_KEY</Text> to your .env file and restart.
+                  {t('generate.resultDemoActiveDesc')}
                 </Text>
               </View>
             </View>
@@ -212,7 +212,7 @@ export default function ResultScreen() {
             <View className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl px-4 py-3 mb-4 flex-row items-center">
               <Icons.Check size={16} color="#10b981" style={{ marginRight: 8 }} />
               <Text className="text-emerald-700 dark:text-emerald-400 font-semibold text-xs flex-1">
-                Real AI generation complete! Your face has been placed into the scene by the Replicate face-swap model.
+                {t('generate.resultRealAiSuccess')}
               </Text>
             </View>
           )}
@@ -223,14 +223,14 @@ export default function ResultScreen() {
               <View className="w-[48%]">
                 <SecondaryButton
                   onPress={handleDownload}
-                  title="Save Image"
+                  title={t('generate.resultSaveBtn')}
                   icon={<Icons.Download size={18} className="text-primary-500 dark:text-primary-400" />}
                 />
               </View>
               <View className="w-[48%]">
                 <SecondaryButton
                   onPress={handleShare}
-                  title="Share"
+                  title={t('generate.resultShareBtn')}
                   icon={<Icons.Share size={18} className="text-primary-500 dark:text-primary-400" />}
                 />
               </View>
@@ -238,7 +238,7 @@ export default function ResultScreen() {
 
             <PrimaryButton
               onPress={handleGenerateAgain}
-              title="Generate Another Scene"
+              title={t('generate.resultGenerateAgainBtn')}
               icon={<Icons.Refresh size={18} color="#ffffff" />}
             />
           </View>

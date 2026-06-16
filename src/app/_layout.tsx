@@ -7,7 +7,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
 import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/authStore';
+import { useAuthStore, setPendingRecovery } from '../store/authStore';
 import { useThemeStore } from '../store/themeStore';
 
 // Import NativeWind compiled stylesheet
@@ -23,10 +23,13 @@ const queryClient = new QueryClient({
 });
 
 function RootLayoutContent() {
+  console.log('====================================================');
+  console.log('🚀 TRAVEL PHOTO EXPO APP - METRO LOGS CONNECTED 🚀');
+  console.log('====================================================');
+
   const { isAuthenticated, isLoading, isRecoveringPassword } = useAuthStore();
   const { colorScheme } = useThemeStore();
   const segments = useSegments();
-  const url = Linking.useURL();
 
   // Handle incoming deep links (especially for password recovery)
   useEffect(() => {
@@ -36,9 +39,15 @@ function RootLayoutContent() {
     }
 
     const handleDeepLink = async (initialUrl: string | null) => {
-      if (!initialUrl) return;
+      console.log('🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗');
+      console.log('[RootLayout] handleDeepLink Triggered!');
+      console.log('[RootLayout] Raw incoming URL:', initialUrl);
+      console.log('🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗🔗');
 
-      console.log('[RootLayout] Received deep link URL:', initialUrl);
+      if (!initialUrl) {
+        console.log('[RootLayout] URL is null, skipping.');
+        return;
+      }
 
       // Parse query parameters and hash fragments using custom robust parser
       const params: Record<string, string> = {};
@@ -62,17 +71,26 @@ function RootLayoutContent() {
       parsePart(queryPart.split('#')[0]);
       parsePart(hashPart);
 
+      console.log('[RootLayout] Parsed parameters:', JSON.stringify(params, null, 2));
+
       // Check if this is a password recovery link
       const isRecovery = params.type === 'recovery' || initialUrl.includes('reset-password');
+      console.log(`[RootLayout] isRecovery check: params.type='${params.type}', includes('reset-password')=${initialUrl.includes('reset-password')} -> Result: ${isRecovery}`);
 
       if (isRecovery) {
         const code = params.code;
         const access_token = params.access_token;
         const refresh_token = params.refresh_token;
 
+        console.log(`[RootLayout] Recovery parameters found: code=${!!code}, access_token=${!!access_token}, refresh_token=${!!refresh_token}`);
+
         if (code || (access_token && refresh_token)) {
           console.log('[RootLayout] Password recovery credentials detected. Setting session...');
-          // Set recovering flag immediately to prevent other guard redirects to dashboard /
+          // Set BOTH flags synchronously BEFORE the async code exchange.
+          // When exchangeCodeForSession() resolves, onAuthStateChange fires SIGNED_IN.
+          // pendingRecovery=true tells the listener to intercept that event and
+          // skip setSession() so isAuthenticated stays false and the guard won't redirect.
+          setPendingRecovery(true);
           useAuthStore.getState().setRecoveringPassword(true);
           try {
             // Clear explicit logout flag so the auth listener can receive the recovery session
@@ -97,6 +115,9 @@ function RootLayoutContent() {
             router.replace('/(auth)/reset-password');
           } catch (e: any) {
             console.error('[RootLayout] Failed to process recovery session:', e.message);
+            // Clean up flags so the app is not stuck in recovery mode
+            setPendingRecovery(false);
+            useAuthStore.getState().setRecoveringPassword(false);
           }
         } else {
           console.warn('[RootLayout] Recovery link matched but no code or access token found in URL.');
@@ -104,8 +125,24 @@ function RootLayoutContent() {
       }
     };
 
-    handleDeepLink(url);
-  }, [url, isLoading]);
+    console.log('[RootLayout] Setting up deep link listeners...');
+    
+    // 1. Check if app was opened from cold start with a URL
+    Linking.getInitialURL().then((initialUrl) => {
+      console.log('[RootLayout] Initial URL from cold start:', initialUrl);
+      handleDeepLink(initialUrl);
+    });
+
+    // 2. Listen for URLs when app is already running in background
+    const subscription = Linking.addEventListener('url', (event) => {
+      console.log('[RootLayout] Received new URL while running:', event.url);
+      handleDeepLink(event.url);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isLoading]);
 
   // Watch Auth status and route segment configurations
   useEffect(() => {

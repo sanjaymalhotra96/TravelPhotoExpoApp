@@ -14,6 +14,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ErrorState } from '../../components/common/ErrorState';
 import { getGenerationParams, clearGenerationParams } from '../../store/generationStore';
+import { t } from '../../utils/i18n';
 
 export default function PollingScreen() {
   const router = useRouter();
@@ -82,7 +83,7 @@ export default function PollingScreen() {
       } catch (err: any) {
         if (active) {
           console.error('[PollingScreen] Generation error:', err?.message);
-          setErrorMsg(err?.message || 'Error uploading photo to generation queue.');
+          setErrorMsg(err?.message || t('generate.pollingUploadError'));
         }
       }
     };
@@ -170,7 +171,7 @@ export default function PollingScreen() {
             setJobId(res.jobId);
           }
         })
-        .catch((err) => setErrorMsg(err?.message || 'Failed to start generation.'));
+        .catch((err) => setErrorMsg(err?.message || t('generate.pollingStartError')));
     }
   };
 
@@ -178,7 +179,7 @@ export default function PollingScreen() {
     errorMsg ||
     pollingError?.message ||
     (jobDetails?.status === 'failed'
-      ? (jobDetails.error || 'AI model was unable to transform your image. Please try again.')
+      ? (jobDetails.error || t('generate.pollingModelError'))
       : null);
 
   if (activeError) {
@@ -186,15 +187,15 @@ export default function PollingScreen() {
   }
 
   // Build progress label
-  let stepMessage = 'Uploading photo...';
+  let stepMessage = t('generate.pollingStatusUploading');
   if (!isUploading && jobId) {
     const progress = jobDetails?.progress ?? 0;
-    if (progress <= 20) stepMessage = 'Sending photo to AI queue...';
-    else if (progress <= 50) stepMessage = 'Analysing facial features...';
-    else if (progress <= 80) stepMessage = 'Blending into the scene...';
-    else stepMessage = 'Finalising your travel photo...';
+    if (progress <= 20) stepMessage = t('generate.pollingStatusQueueing');
+    else if (progress <= 50) stepMessage = t('generate.pollingStatusAnalyzing');
+    else if (progress <= 80) stepMessage = t('generate.pollingStatusBlending');
+    else stepMessage = t('generate.pollingStatusFinalizing');
   } else if (isUploading) {
-    stepMessage = 'Preparing your photo for AI...';
+    stepMessage = t('generate.pollingStatusPreparing');
   }
 
   return (
@@ -220,7 +221,7 @@ export default function PollingScreen() {
           <ActivityIndicator color="#8b5cf6" size="large" className="mb-4" />
 
           <Text className="text-light-text dark:text-dark-text font-black text-xl mb-1 text-center">
-            Rendering Travel Scene
+            {t('generate.pollingTitle')}
           </Text>
 
           <Text className="text-primary-500 font-bold text-sm text-center mb-3">
@@ -229,8 +230,7 @@ export default function PollingScreen() {
           </Text>
 
           <Text className="text-light-muted dark:text-dark-muted text-xs text-center leading-relaxed">
-            Our AI is placing your face naturally into the scene.{'\n'}
-            This usually takes 20–40 seconds.
+            {t('generate.pollingSubtitle')}
           </Text>
         </View>
 

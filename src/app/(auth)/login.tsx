@@ -11,11 +11,12 @@ import { PasswordField } from '../../components/forms/PasswordField';
 import { LoadingButton } from '../../components/ui/LoadingButton';
 import { Toast } from '../../components/common/Toast';
 import { Icons } from '../../theme';
+import { t } from '../../utils/i18n';
 
 // Validation constraints
 const loginSchema = z.object({
-  email: z.string().email('Please enter a valid email address'),
-  password: z.string().min(6, 'Password must be at least 6 characters'),
+  email: z.string().email(t('auth.validation.email')),
+  password: z.string().min(6, t('auth.validation.password')),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
@@ -48,17 +49,17 @@ export default function LoginScreen() {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       await loginUser({ email: data.email, password: data.password });
-      showToast('Login successful!', 'success');
+      showToast(t('auth.login.successToast'), 'success');
       // Navigation will be automatically managed by Auth layout guards in root layout
     } catch (e: any) {
-      showToast(e?.message || 'Login failed. Please verify credentials.', 'error');
+      showToast(e?.message || t('auth.login.errorToast'), 'error');
     }
   };
 
   const handleOAuthLogin = async (provider: 'google' | 'apple') => {
     try {
       await loginUser({ email: '', provider });
-      showToast(`${provider === 'google' ? 'Google' : 'Apple'} Sign-In successful!`, 'success');
+      showToast(provider === 'google' ? t('auth.login.googleSuccessToast') : t('auth.login.appleSuccessToast'), 'success');
     } catch (e: any) {
       showToast(`OAuth failure: ${e?.message}`, 'error');
     }
@@ -83,10 +84,10 @@ export default function LoginScreen() {
             <Icons.Sparkles size={32} color="#ffffff" />
           </View>
           <Text className="text-light-text dark:text-dark-text text-3xl font-black tracking-tight mb-1 text-center">
-            Travel Photo AI
+            {t('auth.login.title')}
           </Text>
           <Text className="text-light-muted dark:text-dark-muted text-sm text-center">
-            Log in to teleport yourself anywhere on earth
+            {t('auth.login.subtitle')}
           </Text>
         </View>
 
@@ -95,8 +96,8 @@ export default function LoginScreen() {
           <TextField
             name="email"
             control={control}
-            label="Email Address"
-            placeholder="example@domain.com"
+            label={t('auth.login.emailLabel')}
+            placeholder={t('auth.login.emailPlaceholder')}
             keyboardType="email-address"
             error={errors.email?.message}
             leftIcon={<Icons.Mail size={18} className="text-light-muted dark:text-dark-muted" />}
@@ -105,8 +106,8 @@ export default function LoginScreen() {
           <PasswordField
             name="password"
             control={control}
-            label="Password"
-            placeholder="••••••••"
+            label={t('auth.login.passwordLabel')}
+            placeholder={t('auth.login.passwordPlaceholder')}
             error={errors.password?.message}
             leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
           />
@@ -115,7 +116,7 @@ export default function LoginScreen() {
             <Link href="/(auth)/forgot-password" asChild>
               <Pressable className="active:opacity-50">
                 <Text className="text-primary-500 dark:text-primary-400 font-semibold text-xs">
-                  Forgot Password?
+                  {t('auth.login.forgotPassword')}
                 </Text>
               </Pressable>
             </Link>
@@ -123,16 +124,16 @@ export default function LoginScreen() {
 
           <LoadingButton
             onPress={handleSubmit(onSubmit)}
-            title="Log In"
+            title={t('auth.login.loginButton')}
             loading={isPending}
-            loadingTitle="Authenticating..."
+            loadingTitle={t('auth.login.loggingIn')}
           />
         </View>
 
         {/* Divider */}
         <View className="flex-row items-center mb-6">
           <View className="flex-1 h-[1px] bg-light-border dark:bg-dark-border" />
-          <Text className="text-light-muted dark:text-dark-muted text-xs mx-4">or continue with</Text>
+          <Text className="text-light-muted dark:text-dark-muted text-xs mx-4">{t('auth.login.dividerText')}</Text>
           <View className="flex-1 h-[1px] bg-light-border dark:bg-dark-border" />
         </View>
 
@@ -143,7 +144,7 @@ export default function LoginScreen() {
             className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
           >
             <Icons.User size={18} color="#ea4335" className="mr-2" />
-            <Text className="text-light-text dark:text-dark-text font-bold text-sm">Google</Text>
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.googleButton')}</Text>
           </Pressable>
 
           <Pressable
@@ -151,19 +152,19 @@ export default function LoginScreen() {
             className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
           >
             <Icons.User size={18} className="text-light-text dark:text-dark-text mr-2" />
-            <Text className="text-light-text dark:text-dark-text font-bold text-sm">Apple</Text>
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.appleButton')}</Text>
           </Pressable>
         </View>
 
         {/* Sign Up Link */}
         <View className="flex-row justify-center items-center pb-8">
           <Text className="text-light-muted dark:text-dark-muted text-sm mr-1.5">
-            Don't have an account?
+            {t('auth.login.noAccount')}
           </Text>
           <Link href="/(auth)/register" asChild>
             <Pressable className="active:opacity-50">
               <Text className="text-primary-500 dark:text-primary-400 font-bold text-sm">
-                Sign Up
+                {t('auth.login.signUpLink')}
               </Text>
             </Pressable>
           </Link>
