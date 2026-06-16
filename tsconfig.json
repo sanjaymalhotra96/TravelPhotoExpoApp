@@ -1,0 +1,21 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "expo-router": ["node_modules/expo-router/build/index.d.ts"],
+      "react-hook-form": ["node_modules/react-hook-form/dist/index.d.ts"],
+      "@tanstack/react-query": ["node_modules/@tanstack/react-query/build/legacy/index.d.ts"],
+      "@hookform/resolvers/zod": ["node_modules/@hookform/resolvers/zod/dist/zod.d.ts"],
+      "expo-haptics": ["node_modules/expo-haptics/build/Haptics.d.ts"],
+      "expo-secure-store": ["node_modules/expo-secure-store/build/SecureStore.d.ts"],
+      "@supabase/supabase-js": ["node_modules/@supabase/supabase-js/dist/index.d.cts"]
+    },
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  }
+}

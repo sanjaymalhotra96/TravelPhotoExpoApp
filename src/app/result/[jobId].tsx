@@ -1,0 +1,252 @@
+import React, { useState } from 'react';
+import { View, Text, ScrollView, Image, Alert } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+import * as Haptics from 'expo-haptics';
+import { templatesApi } from '../../api/templates';
+import { ScreenHeader } from '../../components/common/ScreenHeader';
+import { PrimaryButton } from '../../components/ui/PrimaryButton';
+import { SecondaryButton } from '../../components/ui/SecondaryButton';
+import { LoadingOverlay } from '../../components/loaders/LoadingOverlay';
+import { Icons } from '../../theme';
+
+export default function ResultScreen() {
+  const router = useRouter();
+  const queryClient = useQueryClient();
+
+  const { jobId, templateId, resultUrl, imageUri, templateUrl, isMock } =
+    useLocalSearchParams<{
+      jobId: string;
+      templateId: string;
+      resultUrl: string;   // AI-generated image URL (real) or user's photo URI (mock)
+      imageUri: string;    // User's original uploaded photo (always)
+      templateUrl: string; // Template background URL (for mock preview)
+      isMock: string;      // 'true' | 'false'
+    }>();
+
+  const isMockMode = isMock !== 'false'; // default to mock-safe display
+
+  // Decode navigation parameters to prevent double-encoding issues in file paths / URIs
+  const decodedImageUri = imageUri ? decodeURIComponent(imageUri) : '';
+  const decodedResultUrl = resultUrl ? decodeURIComponent(resultUrl) : '';
+  const decodedTemplateUrl = templateUrl ? decodeURIComponent(templateUrl) : '';
+
+  const [loading, setLoading] = useState(false);
+  const [loadingMsg, setLoadingMsg] = useState('');
+
+  console.log('[ResultScreen] Params received:', {
+    jobId,
+    templateId,
+    resultUrl,
+    imageUri,
+    templateUrl,
+    isMock,
+    isMockMode,
+    decodedImageUri,
+    decodedResultUrl,
+    decodedTemplateUrl,
+  });
+
+  // Fetch template metadata for label display
+  const { data: template } = useQuery({
+    queryKey: ['template', templateId],
+    queryFn: () => templatesApi.getTemplateById(templateId || ''),
+    enabled: !!templateId,
+  });
+
+  // The URL to display as the main result image
+  // In real mode: resultUrl = the Replicate-generated composite image
+  // In mock mode: templateUrl = travel scene background (with user face shown as overlay)
+  const displayBackgroundUrl = isMockMode
+    ? (decodedTemplateUrl || template?.coverUrl || decodedResultUrl)
+    : decodedResultUrl;
+
+  // Download a remote image URL to local cache
+  const downloadToLocalCache = async (): Promise<string | null> => {
+    try {
+      const targetUrl = decodedResultUrl;
+      if (!targetUrl) throw new Error('No result URL to download.');
+
+      const filename = `travel_ai_photo_${jobId ?? Date.now()}.jpg`;
+      const localUri = `${FileSystem.cacheDirectory}${filename}`;
+
+      console.log('[ResultScreen] Downloading image to:', localUri);
+      const result = await FileSystem.downloadAsync(targetUrl, localUri);
+      return result.uri;
+    } catch (e: any) {
+      console.error('[ResultScreen] Download error:', e);
+      Alert.alert('Download Error', e?.message || 'Could not download the image.');
+      return null;
+    }
+  };
+
+  const handleDownload = async () => {
+    setLoadingMsg('Saving image...');
+    setLoading(true);
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    const localUri = await downloadToLocalCache();
+    setLoading(false);
+
+    if (localUri) {
+      Alert.alert(
+        '✅ Saved!',
+        `Your AI travel photo has been saved to device cache:\n${localUri}`,
+        [{ text: 'OK' }]
+      );
+    }
+  };
+
+  const handleShare = async () => {
+    setLoadingMsg('Preparing share...');
+    setLoading(true);
+
+    const localUri = await downloadToLocalCache();
+    setLoading(false);
+
+    if (localUri) {
+      const canShare = await Sharing.isAvailableAsync();
+      if (canShare) {
+        await Sharing.shareAsync(localUri);
+      } else {
+        Alert.alert('Sharing Unavailable', 'Sharing is not supported on this platform.');
+      }
+    }
+  };
+
+  const handleGenerateAgain = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    queryClient.clear();
+    router.replace('/(tabs)');
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+      <ScreenHeader title="Your AI Travel Photo" />
+
+      <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        className="flex-1 px-5 pt-4"
+      >
+        <View className="flex-1">
+
+          {/* ── Main Result Image Card ───────────────────────────────────── */}
+          <View className="w-full aspect-[4/5] rounded-3xl overflow-hidden border border-light-border dark:border-dark-border relative shadow-lg bg-slate-100 dark:bg-zinc-900 mb-4">
+
+            {/* Background: travel template (mock) or AI-generated composite (real) */}
+            {displayBackgroundUrl ? (
+              <Image
+                source={{ uri: displayBackgroundUrl }}
+                className="absolute inset-0 w-full h-full"
+                resizeMode="cover"
+              />
+            ) : null}
+
+            {/* ── MOCK MODE: Show uploaded user photo as face overlay ────── */}
+            {isMockMode && decodedImageUri ? (
+              <View className="absolute inset-0 items-center justify-center bg-slate-950/25">
+                {/* Face circle overlay */}
+                <View className="items-center bg-white/10 px-5 py-6 rounded-3xl border border-white/20 backdrop-blur-md shadow-2xl mx-6">
+                  <View className="w-32 h-32 rounded-full border-4 border-primary-500 overflow-hidden shadow-premium mb-3 bg-slate-800">
+                    <Image
+                      source={{ uri: decodedImageUri }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                    />
+                  </View>
+                  <View className="bg-primary-600/90 px-4 py-1.5 rounded-full shadow-md mb-1">
+                    <Text className="text-white text-[10px] font-black uppercase tracking-widest">
+                      🤖 Demo Preview
+                    </Text>
+                  </View>
+                  <Text className="text-white/70 text-[10px] text-center mt-1 leading-relaxed max-w-[200px]">
+                    Add a Replicate API key to see your{'\n'}face placed into this scene by real AI
+                  </Text>
+                </View>
+              </View>
+            ) : null}
+
+            {/* ── REAL MODE: Label showing AI composite ─────────────────── */}
+            {!isMockMode ? (
+              <View className="absolute top-4 right-4 bg-emerald-500/90 px-3 py-1.5 rounded-full shadow-md">
+                <Text className="text-white text-[10px] font-black uppercase tracking-widest">
+                  ✨ AI Generated
+                </Text>
+              </View>
+            ) : null}
+
+            {/* Template name badge */}
+            <View className="absolute bottom-4 left-4 right-4 bg-slate-900/80 p-4 rounded-2xl flex-row items-center border border-white/10">
+              <View className="bg-primary-500 rounded-full p-2 mr-3">
+                <Icons.Sparkles size={16} color="#ffffff" />
+              </View>
+              <View className="flex-1">
+                <Text className="text-white/60 text-[10px] font-semibold uppercase tracking-wider">
+                  Travel Destination
+                </Text>
+                <Text className="text-white text-sm font-bold">
+                  {template?.name ?? 'Custom Scene'}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* ── Info Strip ─────────────────────────────────────────────────── */}
+          {isMockMode ? (
+            <View className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl px-4 py-3 mb-4 flex-row items-start">
+              <Icons.Warning size={16} color="#d97706" style={{ marginTop: 1, marginRight: 8 }} />
+              <View className="flex-1">
+                <Text className="text-amber-700 dark:text-amber-400 font-bold text-xs mb-0.5">
+                  Demo Mode Active
+                </Text>
+                <Text className="text-amber-600 dark:text-amber-500 text-xs leading-relaxed">
+                  Your face is shown in a circle overlay. To see yourself placed into the actual scene, add{' '}
+                  <Text className="font-mono font-bold">EXPO_PUBLIC_REPLICATE_API_KEY</Text> to your .env file and restart.
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl px-4 py-3 mb-4 flex-row items-center">
+              <Icons.Check size={16} color="#10b981" style={{ marginRight: 8 }} />
+              <Text className="text-emerald-700 dark:text-emerald-400 font-semibold text-xs flex-1">
+                Real AI generation complete! Your face has been placed into the scene by the Replicate face-swap model.
+              </Text>
+            </View>
+          )}
+
+          {/* ── Action Buttons ──────────────────────────────────────────────── */}
+          <View className="pb-8 mt-auto">
+            <View className="flex-row justify-between mb-4">
+              <View className="w-[48%]">
+                <SecondaryButton
+                  onPress={handleDownload}
+                  title="Save Image"
+                  icon={<Icons.Download size={18} className="text-primary-500 dark:text-primary-400" />}
+                />
+              </View>
+              <View className="w-[48%]">
+                <SecondaryButton
+                  onPress={handleShare}
+                  title="Share"
+                  icon={<Icons.Share size={18} className="text-primary-500 dark:text-primary-400" />}
+                />
+              </View>
+            </View>
+
+            <PrimaryButton
+              onPress={handleGenerateAgain}
+              title="Generate Another Scene"
+              icon={<Icons.Refresh size={18} color="#ffffff" />}
+            />
+          </View>
+
+        </View>
+      </ScrollView>
+
+      <LoadingOverlay visible={loading} message={loadingMsg} />
+    </SafeAreaView>
+  );
+}

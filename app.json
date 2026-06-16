@@ -1,0 +1,47 @@
+{
+  "expo": {
+    "name": "TravelPhotoExpoApp",
+    "slug": "travel-photo-expo-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "cover",
+      "backgroundColor": "#ffffff"
+    },
+    "androidNavigationBar": {
+      "visible": "always",
+      "barStyle": "dark-content",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.travelphoto.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app requires access to your camera to take travel photo captures.",
+        "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to pick images for travel transformations."
+      }
+    },
+    "android": {
+      "package": "com.travelphoto.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
+      ]
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "travelphotoexpo",
+    "experiments": {
+      "tsconfigPaths": true
+    }
+  }
+}
