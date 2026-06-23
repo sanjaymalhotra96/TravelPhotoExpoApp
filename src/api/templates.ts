@@ -1,5 +1,5 @@
-import { CONFIG, MOCK_TEMPLATES, TravelTemplate } from '../constants';
-import { apiClient } from '../services/api/client';
+import { CONFIG, MOCK_TEMPLATES, TravelTemplate } from '@/constants';
+import { apiClient } from '@/services/api/client';
 
 export const templatesApi = {
   getTemplates: async (): Promise<TravelTemplate[]> => {

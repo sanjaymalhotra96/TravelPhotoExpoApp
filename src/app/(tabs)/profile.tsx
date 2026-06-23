@@ -1,20 +1,21 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useProfile } from '../../hooks/useProfile';
-import { useAuthStore } from '../../store/authStore';
-import { HistoryItem } from '../../constants';
-import { ImageCard } from '../../components/cards/ImageCard';
-import { ImageViewer } from '../../components/common/ImageViewer';
-import { ConfirmationDialog } from '../../components/dialogs/ConfirmationDialog';
-import { EmptyState } from '../../components/common/EmptyState';
-import { ErrorState } from '../../components/common/ErrorState';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { useProfile } from '@/hooks/useProfile';
+import { useAuthStore } from '@/store/authStore';
+import { HistoryItem } from '@/constants';
+import { ImageCard } from '@/components/cards/ImageCard';
+import { ImageViewer } from '@/components/common/ImageViewer';
+import { ConfirmationDialog } from '@/components/dialogs/ConfirmationDialog';
+import { EmptyState } from '@/components/common/EmptyState';
+import { ErrorState } from '@/components/common/ErrorState';
+import { useTheme } from '@/hooks/useTheme';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 export default function ProfileScreen() {
   const { data: profileData, isLoading, error, refetch } = useProfile();
   const logoutUser = useAuthStore((state) => state.logout);
+  const { colors } = useTheme();
 
   const [viewerVisible, setViewerVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -45,10 +46,10 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center">
-        <ActivityIndicator color="#8b5cf6" size="large" />
+      <View className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center">
+        <ActivityIndicator color={colors.primary} size="large" />
         <Text className="text-light-muted dark:text-dark-muted text-sm mt-3">{t('tabs.profile.loading')}</Text>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -60,7 +61,7 @@ export default function ProfileScreen() {
   const history = profileData?.history || [];
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       {/* Custom Header */}
       <View className="w-full flex-row items-center justify-between px-5 py-4 border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-card">
         <Text className="text-light-text dark:text-dark-text text-xl font-bold tracking-tight">
@@ -74,7 +75,7 @@ export default function ProfileScreen() {
           }}
           className="flex-row items-center bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-full border border-red-100 dark:border-red-950 active:bg-red-100 dark:active:bg-red-900/35"
         >
-          <Icons.LogOut size={16} color="#ef4444" className="mr-2" />
+          <Icons.LogOut size={16} color={colors.danger} className="mr-2" />
           <Text className="text-red-500 font-bold text-xs">{t('tabs.profile.signOutBtn')}</Text>
         </Pressable>
       </View>
@@ -154,6 +155,6 @@ export default function ProfileScreen() {
         onConfirm={handleConfirmLogout}
         onCancel={() => setLogoutDialogVisible(false)}
       />
-    </SafeAreaView>
+    </View>
   );
 }

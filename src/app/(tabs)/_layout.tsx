@@ -1,25 +1,24 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { useThemeStore } from '../../store/themeStore';
-import { Icons } from '../../theme';
+import { useTheme } from '@/hooks/useTheme';
+import { Icons } from '@/theme';
 
 export default function TabsLayout() {
-  const { colorScheme } = useThemeStore();
-  const isDark = colorScheme === 'dark';
+  const { colors, isDark } = useTheme();
 
   return (
     <Tabs
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: isDark ? '#191924' : '#ffffff',
-          borderTopColor: isDark ? '#282838' : '#e2e8f0',
+          backgroundColor: colors.card,
+          borderTopColor: colors.border,
           height: 60,
           paddingBottom: 8,
           paddingTop: 8,
         },
-        tabBarActiveTintColor: '#8b5cf6', // Indigo-500
-        tabBarInactiveTintColor: isDark ? '#9ca3af' : '#64748b',
+        tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.textMuted,
         tabBarLabelStyle: {
           fontSize: 10,
           fontWeight: '700',

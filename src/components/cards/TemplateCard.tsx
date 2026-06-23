@@ -1,8 +1,8 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
-import { TravelTemplate } from '../../constants';
-import { Icons } from '../../theme';
+import { TravelTemplate } from '@/constants';
+import { Icons } from '@/theme';
 
 interface TemplateCardProps {
   template: TravelTemplate;

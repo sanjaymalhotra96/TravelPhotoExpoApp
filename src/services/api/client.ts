@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, InternalAxiosRequestConfig, AxiosError } from 'axios';
-import { API_CONFIG, STORAGE_KEYS } from '../../constants';
-import { StorageService } from '../storage';
-import { supabase } from '../../lib/supabase';
+import { API_CONFIG, STORAGE_KEYS } from '@/constants';
+import { StorageService } from '@/services/storage';
+import { supabase } from '@/lib/supabase';
 
 export class ApiError extends Error {
   status?: number;

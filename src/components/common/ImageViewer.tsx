@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Modal, Pressable, Image, StyleSheet, Dimensions } from 'react-native';
-import { Icons } from '../../theme';
+import { Icons } from '@/theme';
 
 interface ImageViewerProps {
   visible: boolean;

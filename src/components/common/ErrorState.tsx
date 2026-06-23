@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { Icons } from '../../theme';
-import { SecondaryButton } from '../ui/SecondaryButton';
+import { View, Text, Pressable } from 'react-native';
+import { Icons } from '@/theme';
 
 interface ErrorStateProps {
   message?: string;
@@ -29,7 +28,14 @@ export const ErrorState: React.FC<ErrorStateProps> = ({
 
         {onRetry && (
           <View className="w-full">
-            <SecondaryButton onPress={onRetry} title="Try Again" />
+            <Pressable
+              onPress={onRetry}
+              className="w-full flex-row items-center justify-center py-4 px-6 rounded-2xl border border-primary-500 bg-transparent dark:border-primary-400 active:opacity-60"
+            >
+              <Text className="text-base font-semibold text-center tracking-wide text-primary-500 dark:text-primary-400">
+                Try Again
+              </Text>
+            </Pressable>
           </View>
         )}
       </View>

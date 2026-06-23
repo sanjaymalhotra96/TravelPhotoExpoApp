@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForm, useWatch } from 'react-hook-form';
+import { View, Text, ScrollView, TextInput, Pressable, ActivityIndicator } from 'react-native';
+import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { router } from 'expo-router';
-import { supabase } from '../../lib/supabase';
-import { useAuthStore, setPendingRecovery } from '../../store/authStore';
-import { PasswordField } from '../../components/forms/PasswordField';
-import { LoadingButton } from '../../components/ui/LoadingButton';
-import { Toast } from '../../components/common/Toast';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore, setPendingRecovery } from '@/store/authStore';
+import { Toast } from '@/components/common/Toast';
+import { useTheme } from '@/hooks/useTheme';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 // Password recovery schema with strength validation
 const resetPasswordSchema = z
@@ -33,10 +31,13 @@ const resetPasswordSchema = z
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordScreen() {
+  const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const {
     control,
@@ -127,7 +128,7 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       <Toast
         visible={toastVisible}
         message={toastMessage}
@@ -153,14 +154,51 @@ export default function ResetPasswordScreen() {
         </View>
 
         <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl shadow-premium mb-6">
-          <PasswordField
-            name="password"
-            control={control}
-            label={t('auth.resetPassword.newPasswordLabel')}
-            placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
-            error={errors.password?.message}
-            leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
-          />
+          {/* Password Field */}
+          <View className="w-full mb-4.5">
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-1.5">
+              {t('auth.resetPassword.newPasswordLabel')}
+            </Text>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="relative flex-row items-center w-full">
+                  <View className="absolute left-4 z-10">
+                    <Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />
+                  </View>
+                  <TextInput
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                    secureTextEntry={!showPassword}
+                    className={`w-full bg-white dark:bg-dark-card border ${
+                      errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                    } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    placeholder={t('auth.resetPassword.newPasswordPlaceholder')}
+                    placeholderTextColor="#94a3b8"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  <Pressable
+                    onPress={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 p-1 active:opacity-60"
+                  >
+                    {showPassword ? (
+                      <Icons.EyeOff size={18} className="text-light-muted dark:text-dark-muted" />
+                    ) : (
+                      <Icons.Eye size={18} className="text-light-muted dark:text-dark-muted" />
+                    )}
+                  </Pressable>
+                </View>
+              )}
+            />
+            {errors.password && (
+              <Text className="text-red-500 text-xs mt-1.5 font-semibold">
+                {errors.password.message}
+              </Text>
+            )}
+          </View>
 
           {/* Password strength checklist */}
           <View className="mb-5 px-1">
@@ -177,25 +215,76 @@ export default function ResetPasswordScreen() {
             ))}
           </View>
 
-          <PasswordField
-            name="confirmPassword"
-            control={control}
-            label={t('auth.resetPassword.confirmPasswordLabel')}
-            placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
-            error={errors.confirmPassword?.message}
-            leftIcon={<Icons.Privacy size={18} className="text-light-muted dark:text-dark-muted" />}
-          />
+          {/* Confirm Password Field */}
+          <View className="w-full mb-4.5">
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-1.5">
+              {t('auth.resetPassword.confirmPasswordLabel')}
+            </Text>
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="relative flex-row items-center w-full">
+                  <View className="absolute left-4 z-10">
+                    <Icons.Privacy size={18} className="text-light-muted dark:text-dark-muted" />
+                  </View>
+                  <TextInput
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                    secureTextEntry={!showConfirmPassword}
+                    className={`w-full bg-white dark:bg-dark-card border ${
+                      errors.confirmPassword ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                    } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    placeholder={t('auth.resetPassword.confirmPasswordPlaceholder')}
+                    placeholderTextColor="#94a3b8"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  <Pressable
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-4 p-1 active:opacity-60"
+                  >
+                    {showConfirmPassword ? (
+                      <Icons.EyeOff size={18} className="text-light-muted dark:text-dark-muted" />
+                    ) : (
+                      <Icons.Eye size={18} className="text-light-muted dark:text-dark-muted" />
+                    )}
+                  </Pressable>
+                </View>
+              )}
+            />
+            {errors.confirmPassword && (
+              <Text className="text-red-500 text-xs mt-1.5 font-semibold">
+                {errors.confirmPassword.message}
+              </Text>
+            )}
+          </View>
 
           <View className="mt-4">
-            <LoadingButton
+            <Pressable
               onPress={handleSubmit(onSubmit)}
-              title={t('auth.resetPassword.resetButton')}
-              loading={loading}
-              loadingTitle={t('auth.resetPassword.resetting')}
-            />
+              disabled={loading}
+              className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
+                loading ? 'bg-slate-200 dark:bg-zinc-800 opacity-60' : 'bg-primary-500 active:bg-primary-600'
+              } shadow-premium`}
+            >
+              {loading ? (
+                <View className="flex-row items-center justify-center">
+                  <ActivityIndicator color="#ffffff" size="small" className="mr-2.5" />
+                  <Text className="text-white text-base font-semibold text-center tracking-wide">
+                    {t('auth.resetPassword.resetting')}
+                  </Text>
+                </View>
+              ) : (
+                <Text className="text-white text-base font-bold text-center tracking-wide">
+                  {t('auth.resetPassword.resetButton')}
+                </Text>
+              )}
+            </Pressable>
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

@@ -3,15 +3,21 @@ import { Stack, router, useSegments } from 'expo-router';
 import { StatusBar, Platform } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
-import { supabase } from '../lib/supabase';
-import { useAuthStore, setPendingRecovery } from '../store/authStore';
-import { useThemeStore } from '../store/themeStore';
+import * as SplashScreen from 'expo-splash-screen';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore, setPendingRecovery } from '@/store/authStore';
+import { useTheme } from '@/hooks/useTheme';
+
+// Prevent the splash screen from auto-hiding before asset loading is complete.
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 // Import NativeWind compiled stylesheet
-import '../theme/global.css';
+import '@/theme/global.css';
+
+import { RevenueCatProvider } from '@/providers/revenuecat-provider';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -28,7 +34,7 @@ function RootLayoutContent() {
   console.log('====================================================');
 
   const { isAuthenticated, isLoading, isRecoveringPassword } = useAuthStore();
-  const { colorScheme } = useThemeStore();
+  const { colors, isDark } = useTheme();
   const segments = useSegments();
 
   // Handle incoming deep links (especially for password recovery)
@@ -144,14 +150,22 @@ function RootLayoutContent() {
     };
   }, [isLoading]);
 
+  // Hide splash screen once initial auth loading is complete
+  useEffect(() => {
+    if (!isLoading) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [isLoading]);
+
   // Watch Auth status and route segment configurations
   useEffect(() => {
+    const segs = segments as string[];
     console.log('[RootLayout] Auth guard check:', {
       isAuthenticated,
       isLoading,
       isRecoveringPassword,
-      segments,
-      inAuthGroup: segments[0] === '(auth)'
+      segments: segs,
+      inAuthGroup: segs[0] === '(auth)'
     });
 
     if (isLoading) {
@@ -164,8 +178,8 @@ function RootLayoutContent() {
       return;
     }
 
-    const inAuthGroup = segments[0] === '(auth)';
-    const isResetPasswordScreen = segments[0] === '(auth)' && segments[1] === 'reset-password';
+    const inAuthGroup = segs[0] === '(auth)';
+    const isResetPasswordScreen = segs[0] === '(auth)' && segs[1] === 'reset-password';
 
     if (isResetPasswordScreen) {
       console.log('[RootLayout] User is on Reset Password screen. Bypassing automatic guard redirects.');
@@ -174,29 +188,26 @@ function RootLayoutContent() {
 
     if (!isAuthenticated && !inAuthGroup) {
       console.log('[RootLayout] Redirecting to login: /login');
-      router.replace('/login');
+      router.replace('/(auth)/login');
     } else if (isAuthenticated && inAuthGroup) {
       console.log('[RootLayout] Redirecting to dashboard: /');
-      router.replace('/');
+      router.replace('/(tabs)/');
     }
   }, [isAuthenticated, isLoading, isRecoveringPassword, segments]);
-
-  // Adjust Status bar themes dynamically based on Zustand theme store
-  const isDark = colorScheme === 'dark';
 
   // Synchronize Android system navigation bar styling dynamically based on theme store
   useEffect(() => {
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(isDark ? '#0f0f15' : '#ffffff').catch(() => {});
+      NavigationBar.setBackgroundColorAsync(colors.background).catch(() => {});
       NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark').catch(() => {});
     }
-  }, [isDark]);
+  }, [isDark, colors.background]);
 
   return (
-    <>
+    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar
         barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={isDark ? '#0f0f15' : '#f8fafc'}
+        backgroundColor={colors.background}
       />
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
@@ -205,19 +216,22 @@ function RootLayoutContent() {
         <Stack.Screen name="generate/polling" options={{ presentation: 'card' }} />
         <Stack.Screen name="result/[jobId]" options={{ presentation: 'card' }} />
         <Stack.Screen name="settings/index" options={{ presentation: 'modal' }} />
+        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
       </Stack>
-    </>
+    </SafeAreaView>
   );
 }
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <SafeAreaProvider>
-          <RootLayoutContent />
-        </SafeAreaProvider>
-      </QueryClientProvider>
+      <RevenueCatProvider>
+        <QueryClientProvider client={queryClient}>
+          <SafeAreaProvider>
+            <RootLayoutContent />
+          </SafeAreaProvider>
+        </QueryClientProvider>
+      </RevenueCatProvider>
     </GestureHandlerRootView>
   );
 }

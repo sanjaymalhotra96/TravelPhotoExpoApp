@@ -1,7 +1,5 @@
 import React from 'react';
-import { View, Text, Modal } from 'react-native';
-import { PrimaryButton } from '../ui/PrimaryButton';
-import { SecondaryButton } from '../ui/SecondaryButton';
+import { View, Text, Modal, Pressable } from 'react-native';
 
 interface ConfirmationDialogProps {
   visible: boolean;
@@ -43,14 +41,26 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
 
           <View className="flex-row justify-between">
             <View className="w-[47%]">
-              <SecondaryButton onPress={onCancel} title={cancelText} />
+              <Pressable
+                onPress={onCancel}
+                className="w-full flex-row items-center justify-center py-4 px-6 rounded-2xl border border-primary-500 bg-transparent dark:border-primary-400 active:opacity-60"
+              >
+                <Text className="text-base font-semibold text-center tracking-wide text-primary-500 dark:text-primary-400">
+                  {cancelText}
+                </Text>
+              </Pressable>
             </View>
             <View className="w-[47%]">
-              <PrimaryButton
+              <Pressable
                 onPress={onConfirm}
-                title={confirmText}
-                variant={confirmVariant}
-              />
+                className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
+                  confirmVariant === 'danger' ? 'bg-danger active:bg-danger-dark' : 'bg-primary-500 active:bg-primary-600'
+                } shadow-premium`}
+              >
+                <Text className="text-white text-base font-semibold text-center tracking-wide">
+                  {confirmText}
+                </Text>
+              </Pressable>
             </View>
           </View>
         </View>

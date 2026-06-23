@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { Icons } from '../../theme';
+import { Icons } from '@/theme';
 
 interface ScreenHeaderProps {
   title: string;

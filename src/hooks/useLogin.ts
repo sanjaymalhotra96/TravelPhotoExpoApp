@@ -2,8 +2,8 @@ import { useMutation } from '@tanstack/react-query';
 import { Platform } from 'react-native';
 import * as WebBrowser from 'expo-web-browser';
 import * as Linking from 'expo-linking';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/authStore';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 
 // Complete session callbacks on Web
 if (Platform.OS === 'web') {

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
-import { STORAGE_KEYS } from '../constants';
-import { StorageService } from '../services/storage';
+import { STORAGE_KEYS } from '@/constants';
+import { StorageService } from '@/services/storage';
 
 interface ThemeState {
   colorScheme: 'light' | 'dark';

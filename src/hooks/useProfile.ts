@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
-import { useAuthStore } from '../store/authStore';
-import { CONFIG, MOCK_HISTORY, HistoryItem } from '../constants';
-import { apiClient } from '../services/api/client';
+import { useAuthStore } from '@/store/authStore';
+import { CONFIG, MOCK_HISTORY, HistoryItem } from '@/constants';
+import { apiClient } from '@/services/api/client';
 
 export interface UserProfile {
   email: string;

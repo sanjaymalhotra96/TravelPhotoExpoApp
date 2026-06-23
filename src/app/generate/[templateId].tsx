@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { templatesApi } from '../../api/templates';
-import { ScreenHeader } from '../../components/common/ScreenHeader';
-import { ImagePreview } from '../../components/common/ImagePreview';
-import { PrimaryButton } from '../../components/ui/PrimaryButton';
-import { ImageSourceDialog } from '../../components/dialogs/ImageSourceDialog';
-import { ImagePickerHelper, SelectedImage } from '../../utils/imagePicker';
-import { FullScreenLoader } from '../../components/loaders/FullScreenLoader';
-import { Icons } from '../../theme';
-import { setGenerationParams } from '../../store/generationStore';
-import { t } from '../../utils/i18n';
+import { templatesApi } from '@/api/templates';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { ImagePreview } from '@/components/common/ImagePreview';
+import { ImageSourceDialog } from '@/components/dialogs/ImageSourceDialog';
+import { ImagePickerHelper, SelectedImage } from '@/utils/imagePicker';
+import { FullScreenLoader } from '@/components/loaders/FullScreenLoader';
+import { Icons } from '@/theme';
+import { setGenerationParams } from '@/store/generationStore';
+import { t } from '@/utils/i18n';
 
 export default function GenerateSelectScreen() {
   const router = useRouter();
@@ -73,7 +71,7 @@ export default function GenerateSelectScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       <ScreenHeader title={t('generate.setupTitle')} showBackButton onBackPress={() => router.back()} />
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 px-5 pt-6">
@@ -109,12 +107,22 @@ export default function GenerateSelectScreen() {
         </View>
 
         <View className="pb-8 mt-auto">
-          <PrimaryButton
+          <Pressable
             onPress={handleContinue}
-            title={t('generate.continueBtn')}
             disabled={!selectedImage}
-            icon={<Icons.Sparkles size={18} color="#ffffff" />}
-          />
+            className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
+              !selectedImage ? 'bg-slate-200 dark:bg-zinc-800 opacity-60' : 'bg-primary-500 active:bg-primary-600'
+            } shadow-premium`}
+          >
+            <View className="flex-row items-center justify-center">
+              <View className="mr-2.5">
+                <Icons.Sparkles size={18} color="#ffffff" />
+              </View>
+              <Text className="text-white text-base font-semibold text-center tracking-wide">
+                {t('generate.continueBtn')}
+              </Text>
+            </View>
+          </Pressable>
         </View>
       </ScrollView>
 
@@ -124,6 +132,6 @@ export default function GenerateSelectScreen() {
         onSelectCamera={handleSelectCamera}
         onSelectGallery={handleSelectGallery}
       />
-    </SafeAreaView>
+    </View>
   );
 }

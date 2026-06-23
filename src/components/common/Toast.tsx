@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
-import { Icons } from '../../theme';
+import { Icons } from '@/theme';
 
 interface ToastProps {
   visible: boolean;

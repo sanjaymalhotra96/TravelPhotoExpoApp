@@ -159,6 +159,12 @@
   },
   "settings": {
     "title": "Preferences",
+    "subscriptionSection": "Subscription Plan",
+    "subscriptionFree": "Free Tier",
+    "subscriptionPremium": "Premium Tier",
+    "upgradeToPremium": "Upgrade to Premium",
+    "upgradeDesc": "Unlock unlimited AI generations & premium features",
+    "premiumActiveDesc": "You have full access to all premium features!",
     "themeSection": "Application Theme",
     "darkModeLabel": "Dark Mode",
     "darkModeDesc": "Switch application theme colors",

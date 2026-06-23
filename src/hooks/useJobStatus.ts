@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import { CONFIG, MOCK_GENERATED_IMAGES, API_CONFIG } from '../constants';
-import { mockJobsMap } from './useGenerateImage';
+import { CONFIG, MOCK_GENERATED_IMAGES, API_CONFIG } from '@/constants';
+import { mockJobsMap } from '@/hooks/useGenerateImage';
 
 
 export interface JobStatusDetails {

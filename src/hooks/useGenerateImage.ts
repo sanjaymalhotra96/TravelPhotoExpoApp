@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
-import { CONFIG, REPLICATE_CONFIG, MOCK_TEMPLATES } from '../constants';
+import { CONFIG, REPLICATE_CONFIG, MOCK_TEMPLATES } from '@/constants';
 
 export interface GenerateImageParams {
   imageUri: string;   // User's uploaded portrait (local file URI on device)

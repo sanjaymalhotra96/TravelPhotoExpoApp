@@ -1,4 +1,4 @@
-import enTranslations from '../constants/en.json';
+import enTranslations from '@/constants/en.json';
 
 /**
  * Static translation helper — looks up strings by dot-notation path

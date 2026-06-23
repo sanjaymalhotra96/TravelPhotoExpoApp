@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGenerateImage } from '../../hooks/useGenerateImage';
-import { useJobStatus } from '../../hooks/useJobStatus';
+import { useGenerateImage } from '@/hooks/useGenerateImage';
+import { useJobStatus } from '@/hooks/useJobStatus';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,9 +11,9 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { ErrorState } from '../../components/common/ErrorState';
-import { getGenerationParams, clearGenerationParams } from '../../store/generationStore';
-import { t } from '../../utils/i18n';
+import { ErrorState } from '@/components/common/ErrorState';
+import { getGenerationParams, clearGenerationParams } from '@/store/generationStore';
+import { t } from '@/utils/i18n';
 
 export default function PollingScreen() {
   const router = useRouter();
@@ -199,7 +198,7 @@ export default function PollingScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center p-6">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center p-6">
       <View className="items-center w-full max-w-[85%]">
 
         {/* Laser Scanner Frame */}
@@ -235,6 +234,6 @@ export default function PollingScreen() {
         </View>
 
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

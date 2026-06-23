@@ -1,16 +1,15 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import { useTemplates } from '../../hooks/useTemplates';
-import { TravelTemplate } from '../../constants';
-import { TemplateCard } from '../../components/cards/TemplateCard';
-import { FullScreenLoader } from '../../components/loaders/FullScreenLoader';
-import { ErrorState } from '../../components/common/ErrorState';
-import { EmptyState } from '../../components/common/EmptyState';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { useTemplates } from '@/hooks/useTemplates';
+import { TravelTemplate } from '@/constants';
+import { TemplateCard } from '@/components/cards/TemplateCard';
+import { FullScreenLoader } from '@/components/loaders/FullScreenLoader';
+import { ErrorState } from '@/components/common/ErrorState';
+import { EmptyState } from '@/components/common/EmptyState';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 export default function DashboardScreen() {
   const router = useRouter();
@@ -33,7 +32,7 @@ export default function DashboardScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       {/* Custom Premium Header */}
       <View className="w-full flex-row items-center justify-between px-5 py-4 border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-card">
         <View className="flex-row items-center">
@@ -82,6 +81,6 @@ export default function DashboardScreen() {
           <EmptyState />
         )}
       </View>
-    </SafeAreaView>
+    </View>
   );
 }

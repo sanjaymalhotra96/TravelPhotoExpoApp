@@ -2,7 +2,7 @@
   "expo": {
     "name": "TravelPhotoExpoApp",
     "slug": "travel-photo-expo-app",
-    "version": "1.0.0",
+    "version": "2.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -11,21 +11,25 @@
       "resizeMode": "cover",
       "backgroundColor": "#ffffff"
     },
+    "androidStatusBar": {
+      "translucent": true
+    },
     "androidNavigationBar": {
       "visible": "always",
       "barStyle": "dark-content",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#00000000"
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.travelphoto.app",
+      "bundleIdentifier": "travel.photos",
       "infoPlist": {
         "NSCameraUsageDescription": "This app requires access to your camera to take travel photo captures.",
         "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to pick images for travel transformations."
       }
     },
     "android": {
-      "package": "com.travelphoto.app",
+      "package": "travel.photos",
+      "versionCode": 3,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
@@ -37,11 +41,40 @@
       ]
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24,
+            "targetSdkVersion": 35,
+            "compileSdkVersion": 35
+          }
+        }
+      ],
+      "expo-secure-store",
+      "expo-font",
+      "expo-asset",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash.png",
+          "resizeMode": "cover",
+          "backgroundColor": "#ffffff"
+        }
+      ]
     ],
     "scheme": "travelphotoexpo",
     "experiments": {
       "tsconfigPaths": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "eea681d7-ac7b-43da-b374-31c892a20b66"
+      }
     }
   }
 }

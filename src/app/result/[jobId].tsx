@@ -1,18 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, Image, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, ScrollView, Image, Alert, Pressable } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Haptics from 'expo-haptics';
-import { templatesApi } from '../../api/templates';
-import { ScreenHeader } from '../../components/common/ScreenHeader';
-import { PrimaryButton } from '../../components/ui/PrimaryButton';
-import { SecondaryButton } from '../../components/ui/SecondaryButton';
-import { LoadingOverlay } from '../../components/loaders/LoadingOverlay';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { templatesApi } from '@/api/templates';
+import { ScreenHeader } from '@/components/common/ScreenHeader';
+import { LoadingOverlay } from '@/components/loaders/LoadingOverlay';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 export default function ResultScreen() {
   const router = useRouter();
@@ -125,7 +122,7 @@ export default function ResultScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       <ScreenHeader title={t('generate.resultHeader')} />
 
       <ScrollView
@@ -221,32 +218,56 @@ export default function ResultScreen() {
           <View className="pb-8 mt-auto">
             <View className="flex-row justify-between mb-4">
               <View className="w-[48%]">
-                <SecondaryButton
+                <Pressable
                   onPress={handleDownload}
-                  title={t('generate.resultSaveBtn')}
-                  icon={<Icons.Download size={18} className="text-primary-500 dark:text-primary-400" />}
-                />
+                  className="w-full flex-row items-center justify-center py-4 px-6 rounded-2xl border border-primary-500 bg-transparent dark:border-primary-400 active:opacity-60"
+                >
+                  <View className="flex-row items-center justify-center">
+                    <View className="mr-2.5">
+                      <Icons.Download size={18} className="text-primary-500 dark:text-primary-400" />
+                    </View>
+                    <Text className="text-base font-semibold text-center tracking-wide text-primary-500 dark:text-primary-400">
+                      {t('generate.resultSaveBtn')}
+                    </Text>
+                  </View>
+                </Pressable>
               </View>
               <View className="w-[48%]">
-                <SecondaryButton
+                <Pressable
                   onPress={handleShare}
-                  title={t('generate.resultShareBtn')}
-                  icon={<Icons.Share size={18} className="text-primary-500 dark:text-primary-400" />}
-                />
+                  className="w-full flex-row items-center justify-center py-4 px-6 rounded-2xl border border-primary-500 bg-transparent dark:border-primary-400 active:opacity-60"
+                >
+                  <View className="flex-row items-center justify-center">
+                    <View className="mr-2.5">
+                      <Icons.Share size={18} className="text-primary-500 dark:text-primary-400" />
+                    </View>
+                    <Text className="text-base font-semibold text-center tracking-wide text-primary-500 dark:text-primary-400">
+                      {t('generate.resultShareBtn')}
+                    </Text>
+                  </View>
+                </Pressable>
               </View>
             </View>
 
-            <PrimaryButton
+            <Pressable
               onPress={handleGenerateAgain}
-              title={t('generate.resultGenerateAgainBtn')}
-              icon={<Icons.Refresh size={18} color="#ffffff" />}
-            />
+              className="w-full flex-row items-center justify-center py-4 px-6 rounded-2xl bg-primary-500 active:bg-primary-600 shadow-premium"
+            >
+              <View className="flex-row items-center justify-center">
+                <View className="mr-2.5">
+                  <Icons.Refresh size={18} color="#ffffff" />
+                </View>
+                <Text className="text-white text-base font-bold text-center tracking-wide">
+                  {t('generate.resultGenerateAgainBtn')}
+                </Text>
+              </View>
+            </Pressable>
           </View>
 
         </View>
       </ScrollView>
 
       <LoadingOverlay visible={loading} message={loadingMsg} />
-    </SafeAreaView>
+    </View>
   );
 }

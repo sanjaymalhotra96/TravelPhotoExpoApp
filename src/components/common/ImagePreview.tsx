@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Pressable, Image } from 'react-native';
-import { Icons } from '../../theme';
+import { Icons } from '@/theme';
 
 interface ImagePreviewProps {
   uri: string;

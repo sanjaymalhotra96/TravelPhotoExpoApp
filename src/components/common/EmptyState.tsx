@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 interface EmptyStateProps {
   message?: string;

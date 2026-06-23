@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
-import { HistoryItem } from '../../constants';
-import { Icons } from '../../theme';
+import { HistoryItem } from '@/constants';
+import { Icons } from '@/theme';
 
 interface ImageCardProps {
   item: HistoryItem;

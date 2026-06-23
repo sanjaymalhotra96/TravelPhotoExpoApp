@@ -1,6 +1,6 @@
 import { useMutation } from '@tanstack/react-query';
-import { supabase } from '../lib/supabase';
-import { useAuthStore } from '../store/authStore';
+import { supabase } from '@/lib/supabase';
+import { useAuthStore } from '@/store/authStore';
 
 interface RegisterParams {
   email: string;

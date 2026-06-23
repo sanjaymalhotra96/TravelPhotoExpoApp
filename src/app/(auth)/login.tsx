@@ -1,17 +1,14 @@
 import React, { useState } from 'react'; // refreshed
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForm } from 'react-hook-form';
+import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Link } from 'expo-router';
-import { useLogin } from '../../hooks/useLogin';
-import { TextField } from '../../components/forms/TextField';
-import { PasswordField } from '../../components/forms/PasswordField';
-import { LoadingButton } from '../../components/ui/LoadingButton';
-import { Toast } from '../../components/common/Toast';
-import { Icons } from '../../theme';
-import { t } from '../../utils/i18n';
+import { useLogin } from '@/hooks/useLogin';
+import { Toast } from '@/components/common/Toast';
+import { useTheme } from '@/hooks/useTheme';
+import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 // Validation constraints
 const loginSchema = z.object({
@@ -23,10 +20,12 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const { mutateAsync: loginUser, isPending } = useLogin();
+  const { colors } = useTheme();
   
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     control,
@@ -66,7 +65,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-light-bg dark:bg-dark-bg">
+    <View className="flex-1 bg-light-bg dark:bg-dark-bg">
       <Toast
         visible={toastVisible}
         message={toastMessage}
@@ -93,24 +92,87 @@ export default function LoginScreen() {
 
         {/* Form Fields */}
         <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl shadow-premium mb-6">
-          <TextField
-            name="email"
-            control={control}
-            label={t('auth.login.emailLabel')}
-            placeholder={t('auth.login.emailPlaceholder')}
-            keyboardType="email-address"
-            error={errors.email?.message}
-            leftIcon={<Icons.Mail size={18} className="text-light-muted dark:text-dark-muted" />}
-          />
+          {/* Email Field */}
+          <View className="w-full mb-4.5">
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-1.5">
+              {t('auth.login.emailLabel')}
+            </Text>
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="relative flex-row items-center w-full">
+                  <View className="absolute left-4 z-10">
+                    <Icons.Mail size={18} className="text-light-muted dark:text-dark-muted" />
+                  </View>
+                  <TextInput
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                    keyboardType="email-address"
+                    className={`w-full bg-white dark:bg-dark-card border ${
+                      errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                    } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    placeholder={t('auth.login.emailPlaceholder')}
+                    placeholderTextColor="#94a3b8"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+              )}
+            />
+            {errors.email && (
+              <Text className="text-red-500 text-xs mt-1.5 font-semibold">
+                {errors.email.message}
+              </Text>
+            )}
+          </View>
 
-          <PasswordField
-            name="password"
-            control={control}
-            label={t('auth.login.passwordLabel')}
-            placeholder={t('auth.login.passwordPlaceholder')}
-            error={errors.password?.message}
-            leftIcon={<Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />}
-          />
+          {/* Password Field */}
+          <View className="w-full mb-4.5">
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-1.5">
+              {t('auth.login.passwordLabel')}
+            </Text>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View className="relative flex-row items-center w-full">
+                  <View className="absolute left-4 z-10">
+                    <Icons.Lock size={18} className="text-light-muted dark:text-dark-muted" />
+                  </View>
+                  <TextInput
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                    secureTextEntry={!showPassword}
+                    className={`w-full bg-white dark:bg-dark-card border ${
+                      errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                    } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    placeholder={t('auth.login.passwordPlaceholder')}
+                    placeholderTextColor="#94a3b8"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  <Pressable
+                    onPress={() => setShowPassword(!showPassword)}
+                    className="absolute right-4 p-1 active:opacity-60"
+                  >
+                    {showPassword ? (
+                      <Icons.EyeOff size={18} className="text-light-muted dark:text-dark-muted" />
+                    ) : (
+                      <Icons.Eye size={18} className="text-light-muted dark:text-dark-muted" />
+                    )}
+                  </Pressable>
+                </View>
+              )}
+            />
+            {errors.password && (
+              <Text className="text-red-500 text-xs mt-1.5 font-semibold">
+                {errors.password.message}
+              </Text>
+            )}
+          </View>
 
           <View className="align-self-end items-end mb-5">
             <Link href="/(auth)/forgot-password" asChild>
@@ -122,12 +184,26 @@ export default function LoginScreen() {
             </Link>
           </View>
 
-          <LoadingButton
+          <Pressable
             onPress={handleSubmit(onSubmit)}
-            title={t('auth.login.loginButton')}
-            loading={isPending}
-            loadingTitle={t('auth.login.loggingIn')}
-          />
+            disabled={isPending}
+            className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
+              isPending ? 'bg-slate-200 dark:bg-zinc-800 opacity-60' : 'bg-primary-500 active:bg-primary-600'
+            } shadow-premium`}
+          >
+            {isPending ? (
+              <View className="flex-row items-center justify-center">
+                <ActivityIndicator color="#ffffff" size="small" className="mr-2.5" />
+                <Text className="text-white text-base font-semibold text-center tracking-wide">
+                  {t('auth.login.loggingIn')}
+                </Text>
+              </View>
+            ) : (
+              <Text className="text-white text-base font-bold text-center tracking-wide">
+                {t('auth.login.loginButton')}
+              </Text>
+            )}
+          </Pressable>
         </View>
 
         {/* Divider */}
@@ -171,6 +247,6 @@ export default function LoginScreen() {
         </View>
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
