@@ -18,6 +18,8 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 import '@/theme/global.css';
 
 import { RevenueCatProvider } from '@/providers/revenuecat-provider';
+import { InternetProvider } from '@/providers/InternetProvider';
+import { InternetBottomSheet } from '@/components/InternetBottomSheet';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -218,6 +220,7 @@ function RootLayoutContent() {
         <Stack.Screen name="settings/index" options={{ presentation: 'modal' }} />
         <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
       </Stack>
+      <InternetBottomSheet />
     </SafeAreaView>
   );
 }
@@ -225,13 +228,15 @@ function RootLayoutContent() {
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <RevenueCatProvider>
-        <QueryClientProvider client={queryClient}>
-          <SafeAreaProvider>
-            <RootLayoutContent />
-          </SafeAreaProvider>
-        </QueryClientProvider>
-      </RevenueCatProvider>
+      <InternetProvider>
+        <RevenueCatProvider>
+          <QueryClientProvider client={queryClient}>
+            <SafeAreaProvider>
+              <RootLayoutContent />
+            </SafeAreaProvider>
+          </QueryClientProvider>
+        </RevenueCatProvider>
+      </InternetProvider>
     </GestureHandlerRootView>
   );
 }

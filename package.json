@@ -1,6 +1,6 @@
 {
   "name": "TravelPhotoExpoApp",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
@@ -11,8 +11,10 @@
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx"
   },
   "dependencies": {
+    "@gorhom/bottom-sheet": "^5.2.14",
     "@hookform/resolvers": "^3.9.0",
     "@opentelemetry/api": "^1.9.1",
+    "@react-native-community/netinfo": "11.4.1",
     "@shopify/flash-list": "1.7.3",
     "@supabase/supabase-js": "^2.50.0",
     "@tanstack/react-query": "^5.56.2",

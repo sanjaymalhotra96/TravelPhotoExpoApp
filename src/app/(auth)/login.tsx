@@ -1,5 +1,5 @@
 import React, { useState } from 'react'; // refreshed
-import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -21,7 +21,7 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginScreen() {
   const { mutateAsync: loginUser, isPending } = useLogin();
   const { colors } = useTheme();
-  
+
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
@@ -72,7 +72,7 @@ export default function LoginScreen() {
         type={toastType}
         onHide={() => setToastVisible(false)}
       />
-      
+
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ flexGrow: 1 }}
@@ -110,9 +110,8 @@ export default function LoginScreen() {
                     onChangeText={onChange}
                     value={value || ''}
                     keyboardType="email-address"
-                    className={`w-full bg-white dark:bg-dark-card border ${
-                      errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
-                    } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    className={`w-full bg-white dark:bg-dark-card border ${errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                      } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.emailPlaceholder')}
                     placeholderTextColor="#94a3b8"
                     autoCapitalize="none"
@@ -146,9 +145,8 @@ export default function LoginScreen() {
                     onChangeText={onChange}
                     value={value || ''}
                     secureTextEntry={!showPassword}
-                    className={`w-full bg-white dark:bg-dark-card border ${
-                      errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
-                    } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
+                    className={`w-full bg-white dark:bg-dark-card border ${errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
+                      } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.passwordPlaceholder')}
                     placeholderTextColor="#94a3b8"
                     autoCapitalize="none"
@@ -187,9 +185,8 @@ export default function LoginScreen() {
           <Pressable
             onPress={handleSubmit(onSubmit)}
             disabled={isPending}
-            className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
-              isPending ? 'bg-slate-200 dark:bg-zinc-800 opacity-60' : 'bg-primary-500 active:bg-primary-600'
-            } shadow-premium`}
+            className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${isPending ? 'bg-slate-200 dark:bg-zinc-800 opacity-60' : 'bg-primary-500 active:bg-primary-600'
+              } shadow-premium`}
           >
             {isPending ? (
               <View className="flex-row items-center justify-center">
@@ -217,19 +214,22 @@ export default function LoginScreen() {
         <View className="flex-row justify-between mb-8">
           <Pressable
             onPress={() => handleOAuthLogin('google')}
-            className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
+            className={`flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm ${Platform.OS === 'ios' ? 'w-[47%]' : 'w-full'
+              }`}
           >
             <Icons.User size={18} color="#ea4335" className="mr-2" />
             <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.googleButton')}</Text>
           </Pressable>
 
-          <Pressable
-            onPress={() => handleOAuthLogin('apple')}
-            className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
-          >
-            <Icons.User size={18} className="text-light-text dark:text-dark-text mr-2" />
-            <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.appleButton')}</Text>
-          </Pressable>
+          {Platform.OS === 'ios' && (
+            <Pressable
+              onPress={() => handleOAuthLogin('apple')}
+              className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
+            >
+              <Icons.User size={18} className="text-light-text dark:text-dark-text mr-2" />
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.appleButton')}</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Sign Up Link */}

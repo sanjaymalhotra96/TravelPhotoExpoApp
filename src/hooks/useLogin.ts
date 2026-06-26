@@ -125,11 +125,12 @@ export const useLogin = () => {
                 throw new Error('No authentication details found in the redirect callback URL.');
               }
             }
-          } else if (result.type === 'cancel') {
-            console.log('[useLogin] OAuth session cancelled by user.');
+          } else if (result.type === 'cancel' || result.type === 'dismiss') {
+            console.log(`[useLogin] OAuth session ${result.type}ed by user.`);
             throw new Error('Login cancelled by user.');
           } else {
             console.warn('[useLogin] WebBrowser closed with type:', result.type);
+            throw new Error(`Authentication flow closed: ${result.type}`);
           }
         }
         

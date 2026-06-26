@@ -1,10 +1,11 @@
 import React, { useState } from 'react'; // refreshed
-import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator } from 'react-native';
+import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Link } from 'expo-router';
 import { useRegister } from '@/hooks/useRegister';
+import { useLogin } from '@/hooks/useLogin';
 import { Toast } from '@/components/common/Toast';
 import { useTheme } from '@/hooks/useTheme';
 import { Icons } from '@/theme';
@@ -26,6 +27,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export default function RegisterScreen() {
   const { mutateAsync: registerUser, isPending } = useRegister();
+  const { mutateAsync: loginUser } = useLogin();
   const { colors } = useTheme();
 
   const [toastVisible, setToastVisible] = useState(false);
@@ -62,6 +64,15 @@ export default function RegisterScreen() {
     }
   };
 
+  const handleOAuthSignUp = async (provider: 'google' | 'apple') => {
+    try {
+      await loginUser({ email: '', provider });
+      showToast(provider === 'google' ? t('auth.login.googleSuccessToast') : t('auth.login.appleSuccessToast'), 'success');
+    } catch (e: any) {
+      showToast(`OAuth failure: ${e?.message}`, 'error');
+    }
+  };
+
 
   return (
     <View className="flex-1 bg-light-bg dark:bg-dark-bg">
@@ -89,7 +100,7 @@ export default function RegisterScreen() {
           </Text>
         </View>
 
-        <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl shadow-premium mb-8">
+        <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl shadow-premium mb-6">
           {/* Email Field */}
           <View className="w-full mb-4.5">
             <Text className="text-light-text dark:text-dark-text font-bold text-sm mb-1.5">
@@ -240,6 +251,36 @@ export default function RegisterScreen() {
               )}
             </Pressable>
           </View>
+        </View>
+
+        {/* Divider */}
+        <View className="flex-row items-center mb-6">
+          <View className="flex-1 h-[1px] bg-light-border dark:bg-dark-border" />
+          <Text className="text-light-muted dark:text-dark-muted text-xs mx-4">{t('auth.login.dividerText')}</Text>
+          <View className="flex-1 h-[1px] bg-light-border dark:bg-dark-border" />
+        </View>
+
+        {/* Social Logins */}
+        <View className="flex-row justify-between mb-8">
+          <Pressable
+            onPress={() => handleOAuthSignUp('google')}
+            className={`flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm ${
+              Platform.OS === 'ios' ? 'w-[47%]' : 'w-full'
+            }`}
+          >
+            <Icons.User size={18} color="#ea4335" className="mr-2" />
+            <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.googleButton')}</Text>
+          </Pressable>
+
+          {Platform.OS === 'ios' && (
+            <Pressable
+              onPress={() => handleOAuthSignUp('apple')}
+              className="flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border w-[47%] py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
+            >
+              <Icons.User size={18} className="text-light-text dark:text-dark-text mr-2" />
+              <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.appleButton')}</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Login Link */}
