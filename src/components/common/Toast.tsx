@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Text, View } from 'react-native';
 import Animated, { SlideInUp, SlideOutUp } from 'react-native-reanimated';
 import { Icons } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ToastProps {
   visible: boolean;
@@ -18,6 +19,8 @@ export const Toast: React.FC<ToastProps> = ({
   onHide,
   duration = 3000,
 }) => {
+  const { colors } = useTheme();
+
   useEffect(() => {
     if (visible) {
       const timer = setTimeout(() => {
@@ -30,7 +33,7 @@ export const Toast: React.FC<ToastProps> = ({
   if (!visible) return null;
 
   let bgClass = 'bg-slate-900 border-slate-800';
-  let icon = <Icons.Info size={18} color="#8b5cf6" />;
+  let icon = <Icons.Info size={18} color={colors.primary} />;
 
   if (type === 'success') {
     bgClass = 'bg-emerald-500 border-emerald-600';

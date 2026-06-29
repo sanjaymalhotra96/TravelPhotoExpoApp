@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, Modal, Pressable } from 'react-native';
 import { Icons } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface ImageSourceDialogProps {
   visible: boolean;
@@ -15,6 +16,8 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
   onSelectCamera,
   onSelectGallery,
 }) => {
+  const { colors } = useTheme();
+
   return (
     <Modal
       transparent
@@ -42,7 +45,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
               className="items-center bg-slate-50 dark:bg-zinc-800/40 p-5 rounded-2xl w-[42%] border border-light-border dark:border-dark-border active:bg-slate-100 dark:active:bg-zinc-800"
             >
               <View className="bg-primary-50 dark:bg-primary-950/40 p-3.5 rounded-full mb-3">
-                <Icons.Camera size={26} color="#8b5cf6" />
+                <Icons.Camera size={26} color={colors.primary} />
               </View>
               <Text className="text-light-text dark:text-dark-text font-semibold text-sm">
                 Camera
@@ -57,7 +60,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
               className="items-center bg-slate-50 dark:bg-zinc-800/40 p-5 rounded-2xl w-[42%] border border-light-border dark:border-dark-border active:bg-slate-100 dark:active:bg-zinc-800"
             >
               <View className="bg-accent/10 p-3.5 rounded-full mb-3">
-                <Icons.Image size={26} color="#ff1f75" />
+                <Icons.Image size={26} color={colors.secondary} />
               </View>
               <Text className="text-light-text dark:text-dark-text font-semibold text-sm">
                 Gallery

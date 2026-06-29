@@ -14,16 +14,13 @@ try {
 }
 
 export default function PaywallRoute() {
-  const { 
-    isMockMode, 
-    refreshSubscription 
-  } = useRevenueCat();
+  const { refreshSubscription } = useRevenueCat();
   
   const { colorScheme, colors } = useTheme();
   const iconColor = colorScheme === 'dark' ? '#f3f4f6' : '#111827';
 
   // Determine whether to show the native designed RevenueCat dashboard paywall
-  const showNativePaywall = !isMockMode && Platform.OS !== 'web' && RevenueCatUI !== null;
+  const showNativePaywall = Platform.OS !== 'web' && RevenueCatUI !== null;
 
   if (showNativePaywall) {
     return (
@@ -61,20 +58,19 @@ export default function PaywallRoute() {
         </TouchableOpacity>
       </View>
       
-      <Ionicons name="alert-circle-outline" size={64} color="#a855f7" />
+      <Ionicons name="alert-circle-outline" size={64} color={colors.primary} />
       
       <Text className="text-2xl font-black text-light-text dark:text-dark-text mt-6 mb-2 text-center">
         Paywall Unavailable
       </Text>
       
       <Text className="text-base text-light-muted dark:text-dark-muted text-center mb-8 px-4 leading-relaxed">
-        {isMockMode 
-          ? 'The native RevenueCat Paywall is disabled because the app is running in MOCK/DEMO mode.' 
-          : 'Unable to load the native subscription screen. Please check your internet connection or try again later.'}
+        Unable to load the native subscription screen. Please verify your internet connection or check your RevenueCat dashboard offerings configuration.
       </Text>
       
       <TouchableOpacity
-        className="px-8 py-3.5 bg-purple-500 active:bg-purple-600 rounded-xl shadow-lg shadow-purple-500/25"
+        style={{ backgroundColor: colors.primary }}
+        className="px-8 py-3.5 rounded-xl shadow-lg"
         onPress={() => router.back()}
         activeOpacity={0.8}
       >

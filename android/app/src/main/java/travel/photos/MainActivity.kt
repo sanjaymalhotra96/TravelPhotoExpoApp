@@ -10,13 +10,23 @@ import com.facebook.react.defaults.DefaultReactActivityDelegate
 
 import expo.modules.ReactActivityDelegateWrapper
 
+import android.graphics.Color
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
+
 class MainActivity : ReactActivity() {
   override fun onCreate(savedInstanceState: Bundle?) {
     // Set the theme to AppTheme BEFORE onCreate to support
     // coloring the background, status bar, and navigation bar.
     // This is required for expo-splash-screen.
-    setTheme(R.style.AppTheme);
+    setTheme(R.style.AppTheme)
     super.onCreate(null)
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      window.isNavigationBarContrastEnforced = false
+      window.isStatusBarContrastEnforced = false
+    }
   }
 
   /**

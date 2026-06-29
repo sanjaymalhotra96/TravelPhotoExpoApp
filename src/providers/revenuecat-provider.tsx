@@ -15,7 +15,6 @@ export interface SubscriptionState {
   isInitialized: boolean;
   purchaseStatus: 'idle' | 'purchasing' | 'success' | 'error';
   restoreStatus: 'idle' | 'restoring' | 'success' | 'error';
-  isMockMode: boolean;
 }
 
 export interface RevenueCatContextType extends SubscriptionState {
@@ -35,7 +34,6 @@ const initialState: SubscriptionState = {
   isInitialized: false,
   purchaseStatus: 'idle',
   restoreStatus: 'idle',
-  isMockMode: false,
 };
 
 const RevenueCatContext = createContext<RevenueCatContextType | undefined>(undefined);
@@ -65,7 +63,7 @@ export const RevenueCatProvider = ({ children }: { children: ReactNode }) => {
       : [];
     console.log('[RevenueCatProvider] - Active entitlements found in CustomerInfo:', activeEntitlementKeys);
 
-    const isPremium = typeof customerInfo?.entitlements?.active?.[targetEntitlementId] !== 'undefined';
+    const isPremium = typeof customerInfo?.entitlements?.active?.[targetEntitlementId] !== 'undefined' || activeEntitlementKeys.length > 0;
     
     // Warning if the user has active entitlements but none match the app's target entitlement ID
     if (!isPremium && activeEntitlementKeys.length > 0) {
@@ -78,8 +76,12 @@ export const RevenueCatProvider = ({ children }: { children: ReactNode }) => {
       );
     }
     
-    const activeSubscription = isPremium 
-      ? customerInfo?.entitlements?.active?.[targetEntitlementId]?.productIdentifier 
+    const matchedKey = typeof customerInfo?.entitlements?.active?.[targetEntitlementId] !== 'undefined'
+      ? targetEntitlementId
+      : activeEntitlementKeys[0];
+
+    const activeSubscription = isPremium && matchedKey
+      ? customerInfo?.entitlements?.active?.[matchedKey]?.productIdentifier 
       : null;
     
     console.log(`[RevenueCatProvider] Subscription status updated -> IsPremium: ${isPremium}, Active Product ID: ${activeSubscription || 'None'}`);
@@ -100,9 +102,8 @@ export const RevenueCatProvider = ({ children }: { children: ReactNode }) => {
       
       // 1. Initialize RevenueCat (will configure SDK once)
       await RevenueCatService.initialize(user?.id);
-      const isMockMode = RevenueCatService.getIsMockMode();
-      console.log(`[RevenueCatProvider] RevenueCat initialized. Mock Mode: ${isMockMode}`);
-      updateState({ isInitialized: true, isMockMode });
+      console.log('[RevenueCatProvider] Live RevenueCat SDK initialized successfully.');
+      updateState({ isInitialized: true });
 
       // 2. Run the user sync detection flow
       console.log('[RevenueCatProvider] Running syncRevenueCatUser...');

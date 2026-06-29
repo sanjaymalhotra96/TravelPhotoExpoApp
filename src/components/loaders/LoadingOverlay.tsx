@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { useTheme } from '@/hooks/useTheme';
 
 interface LoadingOverlayProps {
   visible: boolean;
@@ -7,12 +8,14 @@ interface LoadingOverlayProps {
 }
 
 export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message = 'Processing...' }) => {
+  const { colors } = useTheme();
+
   if (!visible) return null;
 
   return (
     <View className="absolute inset-0 bg-slate-900/60 z-[99] items-center justify-center flex-1">
       <View className="bg-white dark:bg-dark-card py-6 px-8 rounded-2xl items-center shadow-lg border border-light-border dark:border-dark-border max-w-[80%]">
-        <ActivityIndicator color="#8b5cf6" size="large" />
+        <ActivityIndicator color={colors.primary} size="large" />
         <Text className="text-light-text dark:text-dark-text font-semibold text-base mt-4 text-center">
           {message}
         </Text>

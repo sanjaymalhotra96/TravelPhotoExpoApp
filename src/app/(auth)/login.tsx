@@ -3,7 +3,7 @@ import { View, Text, Pressable, ScrollView, TextInput, ActivityIndicator, Platfo
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { Link } from 'expo-router';
+import { Link, useRouter } from 'expo-router';
 import { useLogin } from '@/hooks/useLogin';
 import { Toast } from '@/components/common/Toast';
 import { useTheme } from '@/hooks/useTheme';
@@ -113,7 +113,7 @@ export default function LoginScreen() {
                     className={`w-full bg-white dark:bg-dark-card border ${errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                       } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.emailPlaceholder')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={colors.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
@@ -148,7 +148,7 @@ export default function LoginScreen() {
                     className={`w-full bg-white dark:bg-dark-card border ${errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                       } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.passwordPlaceholder')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={colors.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />

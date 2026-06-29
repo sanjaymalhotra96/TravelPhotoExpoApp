@@ -9,12 +9,13 @@ import { ImageSourceDialog } from '@/components/dialogs/ImageSourceDialog';
 import { ImagePickerHelper, SelectedImage } from '@/utils/imagePicker';
 import { FullScreenLoader } from '@/components/loaders/FullScreenLoader';
 import { Icons } from '@/theme';
-import { setGenerationParams } from '@/store/generationStore';
+import { useTheme } from '@/hooks/useTheme';
 import { t } from '@/utils/i18n';
 
 export default function GenerateSelectScreen() {
   const router = useRouter();
   const { templateId } = useLocalSearchParams<{ templateId: string }>();
+  const { colors } = useTheme();
 
   const [selectedImage, setSelectedImage] = useState<SelectedImage | null>(null);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -44,21 +45,15 @@ export default function GenerateSelectScreen() {
   };
 
   const handleContinue = () => {
-    console.log('[GenerateSelectScreen] Continue pressed. templateId:', templateId, 'selectedImage:', selectedImage);
-    if (selectedImage && templateId) {
-      // Store imageUri in module memory — NOT in navigation params.
-      // ImagePicker URIs contain slashes that Expo Router misparses as route segments.
-      console.log('[GenerateSelectScreen] Storing generation params in memory store:', { imageUri: selectedImage.uri, templateId });
-      setGenerationParams({ imageUri: selectedImage.uri, templateId });
+    if (!selectedImage) return;
 
-      console.log('[GenerateSelectScreen] Navigating to polling screen...');
-      router.push({
-        pathname: '/generate/polling',
-        params: { templateId }, // only safe string, no file path
-      });
-    } else {
-      console.warn('[GenerateSelectScreen] Cannot continue: missing image or templateId');
-    }
+    router.push({
+      pathname: '/generate/polling',
+      params: {
+        templateId,
+        userImageUri: selectedImage.uri,
+      },
+    });
   };
 
   const handleClear = () => {
@@ -77,7 +72,7 @@ export default function GenerateSelectScreen() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} className="flex-1 px-5 pt-6">
         <View className="mb-5 bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-4 rounded-2xl flex-row items-center">
           <View className="bg-primary-100 dark:bg-primary-950/40 p-2.5 rounded-full mr-3.5">
-            <Icons.Sparkles size={20} color="#8b5cf6" />
+            <Icons.Sparkles size={20} color={colors.primary} />
           </View>
           <View className="flex-1">
             <Text className="text-light-muted dark:text-dark-muted text-xs">{t('generate.targetTemplate')}</Text>
@@ -94,7 +89,7 @@ export default function GenerateSelectScreen() {
               className="w-full aspect-square border-2 border-dashed border-primary-300 dark:border-zinc-700 bg-white dark:bg-dark-card rounded-3xl items-center justify-center p-6 active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm"
             >
               <View className="bg-primary-50 dark:bg-primary-950/30 p-5 rounded-full mb-4">
-                <Icons.Camera size={40} color="#8b5cf6" />
+                <Icons.Camera size={40} color={colors.primary} />
               </View>
               <Text className="text-light-text dark:text-dark-text font-bold text-lg mb-1.5 text-center">
                 {t('generate.addPortraitTitle')}

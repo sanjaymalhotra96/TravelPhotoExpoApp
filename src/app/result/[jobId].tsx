@@ -9,11 +9,13 @@ import { templatesApi } from '@/api/templates';
 import { ScreenHeader } from '@/components/common/ScreenHeader';
 import { LoadingOverlay } from '@/components/loaders/LoadingOverlay';
 import { Icons } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { t } from '@/utils/i18n';
 
 export default function ResultScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { colors } = useTheme();
 
   const { jobId, templateId, resultUrl, imageUri, templateUrl, isMock } =
     useLocalSearchParams<{
@@ -195,7 +197,7 @@ export default function ResultScreen() {
           {/* ── Info Strip ─────────────────────────────────────────────────── */}
           {isMockMode ? (
             <View className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl px-4 py-3 mb-4 flex-row items-start">
-              <Icons.Warning size={16} color="#d97706" style={{ marginTop: 1, marginRight: 8 }} />
+              <Icons.Warning size={16} color={colors.warning} style={{ marginTop: 1, marginRight: 8 }} />
               <View className="flex-1">
                 <Text className="text-amber-700 dark:text-amber-400 font-bold text-xs mb-0.5">
                   {t('generate.resultDemoActiveTitle')}
@@ -207,7 +209,7 @@ export default function ResultScreen() {
             </View>
           ) : (
             <View className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl px-4 py-3 mb-4 flex-row items-center">
-              <Icons.Check size={16} color="#10b981" style={{ marginRight: 8 }} />
+              <Icons.Check size={16} color={colors.success} style={{ marginRight: 8 }} />
               <Text className="text-emerald-700 dark:text-emerald-400 font-semibold text-xs flex-1">
                 {t('generate.resultRealAiSuccess')}
               </Text>

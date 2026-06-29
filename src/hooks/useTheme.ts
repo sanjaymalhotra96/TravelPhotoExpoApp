@@ -16,10 +16,14 @@ export function useTheme() {
       ...colors,
       primary: COLORS.primary,
       primaryHover: COLORS.primaryHover,
+      secondary: COLORS.secondary,
       accent: COLORS.accent,
       success: COLORS.success,
       warning: COLORS.warning,
       danger: COLORS.danger,
+      white: COLORS.white,
+      black: COLORS.black,
+      google: COLORS.google,
     },
   };
 }

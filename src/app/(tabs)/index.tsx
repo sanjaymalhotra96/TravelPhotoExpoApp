@@ -9,10 +9,12 @@ import { FullScreenLoader } from '@/components/loaders/FullScreenLoader';
 import { ErrorState } from '@/components/common/ErrorState';
 import { EmptyState } from '@/components/common/EmptyState';
 import { Icons } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 import { t } from '@/utils/i18n';
 
 export default function DashboardScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { data: templates, isLoading, error, refetch } = useTemplates();
 
   const handleSelectTemplate = (templateId: string) => {
@@ -48,7 +50,7 @@ export default function DashboardScreen() {
           onPress={handleSettingsPress}
           className="p-2.5 rounded-full bg-slate-50 dark:bg-zinc-800/60 border border-light-border dark:border-dark-border active:bg-slate-100 dark:active:bg-zinc-700"
         >
-          <Icons.Settings size={20} className="text-light-text dark:text-dark-text" />
+          <Icons.Settings size={20} color={colors.text} />
         </Pressable>
       </View>
 

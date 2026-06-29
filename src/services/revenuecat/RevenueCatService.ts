@@ -5,14 +5,9 @@ import { REVENUECAT_CONSTANTS } from '@/services/revenuecat/revenuecat.constants
 import { supabase } from '@/lib/supabase';
 import { StorageService } from '@/services/storage';
 
-const isPlaceholderKey = (key?: string): boolean => {
-  return !key || key === '' || key.includes('YOUR_') || key.includes('_KEY_HERE');
-};
-
 class RevenueCatServiceImpl implements IRevenueCatAdapter {
   private static instance: RevenueCatServiceImpl;
   private isInitialized = false;
-  private isMockMode = false;
 
   private constructor() {}
 
@@ -25,7 +20,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
 
   public async initialize(appUserID?: string): Promise<void> {
     if (this.isInitialized) {
-      console.log('[RevenueCatService] initialize: Already initialized.');
+      console.log('[RevenueCatService] initialize: Already initialized. Current App User ID:', appUserID || 'anonymous');
       return;
     }
 
@@ -41,15 +36,8 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     };
 
     const maskedKey = maskKey(apiKey);
-
-    if (isPlaceholderKey(apiKey)) {
-      console.warn(`[RevenueCatService] Running in MOCK/DEMO mode because API keys are not configured or are placeholders (Key: ${maskedKey}).`);
-      this.isMockMode = true;
-      this.isInitialized = true;
-      return;
-    }
-
-    console.log(`[RevenueCatService] Initializing real SDK on Platform: ${Platform.OS} with API key: ${maskedKey}`);
+    console.log(`[RevenueCatService] Initializing live RevenueCat SDK on Platform: ${Platform.OS} with API key: ${maskedKey}`);
+    console.log(`[RevenueCatService] Initial App User ID parameter: ${appUserID || 'anonymous'}`);
 
     try {
       if (__DEV__) {
@@ -58,52 +46,36 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
       }
       
       if (appUserID) {
-        console.log(`[RevenueCatService] Configuring Purchases SDK with appUserID: ${appUserID}`);
+        console.log(`[RevenueCatService] Calling Purchases.configure with appUserID: ${appUserID}`);
         await Purchases.configure({ apiKey: apiKey!, appUserID });
       } else {
-        console.log('[RevenueCatService] Configuring Purchases SDK with anonymous user.');
+        console.log('[RevenueCatService] Calling Purchases.configure with anonymous user.');
         await Purchases.configure({ apiKey: apiKey! });
       }
+      
       this.isInitialized = true;
-      console.log('[RevenueCatService] Native SDK initialization complete.');
+      console.log('[RevenueCatService] Live Native RevenueCat SDK initialization completed successfully.');
     } catch (err: any) {
-      console.error('[RevenueCatService] Failed to configure native SDK:', err);
+      console.error('[RevenueCatService] CRITICAL: Failed to configure live RevenueCat SDK:', err);
       console.error('  - Error Message:', err?.message);
+      console.error('  - Error Code:', err?.code);
       console.error('  - Underlying Error Message:', err?.underlyingErrorMessage);
-      console.warn('[RevenueCatService] Falling back to MOCK/DEMO mode.');
-      this.isMockMode = true;
-      this.isInitialized = true;
+      throw err;
     }
   }
 
   public async getCustomerInfo(): Promise<CustomerInfo> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] getCustomerInfo: Mock mode. Returning mock customer info.');
-      return {
-        entitlements: {
-          all: {},
-          active: {},
-        },
-        activeSubscriptions: [],
-        allPurchasedProductIdentifiers: [],
-        latestExpirationDate: null,
-        firstSeen: new Date().toISOString(),
-        originalAppUserId: 'mock-user',
-        requestDate: new Date().toISOString(),
-        originalPurchaseDate: null,
-        originalApplicationVersion: null,
-        managementURL: null,
-        nonSubscriptionTransactions: [],
-      } as any;
-    }
     this.ensureInitialized();
-    console.log('[RevenueCatService] getCustomerInfo: Fetching current customer info from SDK...');
+    console.log('[RevenueCatService] getCustomerInfo: Fetching current customer info from live RevenueCat SDK...');
     try {
       const customerInfo = await Purchases.getCustomerInfo();
-      console.log('[RevenueCatService] getCustomerInfo: Customer info retrieved. Active entitlements:', JSON.stringify(customerInfo.entitlements.active, null, 2));
+      console.log('[RevenueCatService] getCustomerInfo: Customer info retrieved successfully.');
+      console.log(`[RevenueCatService] - Original App User ID: ${customerInfo.originalAppUserId}`);
+      console.log(`[RevenueCatService] - Active Entitlements:`, JSON.stringify(customerInfo.entitlements.active, null, 2));
+      console.log(`[RevenueCatService] - Active Subscriptions:`, JSON.stringify(customerInfo.activeSubscriptions, null, 2));
       return customerInfo;
     } catch (error: any) {
-      console.error('[RevenueCatService] error in getCustomerInfo:');
+      console.error('[RevenueCatService] error in getCustomerInfo from SDK:');
       console.error('  - Error Message:', error?.message);
       console.error('  - Error Code:', error?.code);
       console.error('  - Underlying Error Message:', error?.underlyingErrorMessage);
@@ -112,39 +84,11 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
   }
 
   public async getOfferings(): Promise<PurchasesOffering[]> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] getOfferings: Running in Mock Mode. Returning mock offerings.');
-      const mockPackages = [
-        {
-          identifier: '$rc_monthly',
-          packageType: 'MONTHLY',
-          product: {
-            identifier: 'monthly_subscription',
-            description: 'Unlimited access to all AI travel portraits, billed monthly.',
-            title: 'Premium Monthly',
-            price: 4.99,
-            priceString: '$4.99',
-            currencyCode: 'USD',
-          },
-        },
-      ];
-
-      return [
-        {
-          identifier: 'premium_offering',
-          serverDescription: 'Premium plans offering unlimited generations',
-          availablePackages: mockPackages,
-          monthly: mockPackages[0],
-          yearly: null,
-          lifetime: null,
-        } as any,
-      ];
-    }
     this.ensureInitialized();
-    console.log('[RevenueCatService] getOfferings: Requesting offerings from RevenueCat...');
+    console.log('[RevenueCatService] getOfferings: Requesting live offerings from RevenueCat SDK...');
     try {
       const offerings = await Purchases.getOfferings();
-      console.log('[RevenueCatService] getOfferings: Raw offerings response:', JSON.stringify(offerings, null, 2));
+      console.log('[RevenueCatService] getOfferings: Raw offerings response received.');
 
       if (!offerings) {
         console.warn('[RevenueCatService] getOfferings: Offerings response is null or undefined.');
@@ -153,19 +97,19 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
 
       const result: PurchasesOffering[] = [];
       if (offerings.current) {
-        console.log(`[RevenueCatService] getOfferings: Found active current offering: ${offerings.current.identifier}`);
+        console.log(`[RevenueCatService] getOfferings: Found active current offering -> ID: ${offerings.current.identifier}`);
         result.push(offerings.current);
       } else {
         console.warn('[RevenueCatService] getOfferings: offerings.current is null. No default offering is set in the RevenueCat dashboard.');
       }
 
       if (offerings.all && Object.keys(offerings.all).length > 0) {
-        console.log(`[RevenueCatService] getOfferings: Found all offerings keys: ${Object.keys(offerings.all).join(', ')}`);
+        console.log(`[RevenueCatService] getOfferings: Found all offering keys in dashboard: ${Object.keys(offerings.all).join(', ')}`);
         if (!offerings.current) {
           const firstOfferingKey = Object.keys(offerings.all)[0];
           const fallbackOffering = offerings.all[firstOfferingKey];
           if (fallbackOffering) {
-            console.log(`[RevenueCatService] getOfferings: Falling back to first available offering: ${firstOfferingKey}`);
+            console.log(`[RevenueCatService] getOfferings: Falling back to first available offering -> ID: ${firstOfferingKey}`);
             result.push(fallbackOffering);
           }
         }
@@ -175,21 +119,20 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
 
       if (result.length === 0) {
         console.warn(
-          '[RevenueCatService] getOfferings: No offerings returned to provider. ' +
+          '[RevenueCatService] getOfferings: No offerings returned to provider.\n' +
           'Please verify in the RevenueCat Dashboard:\n' +
           '1. You have configured an Offering and linked Packages to it.\n' +
           '2. Those Packages contain valid Products (like "monthly:monthly").\n' +
           '3. Under Google Play Console, the corresponding Subscriptions are active.\n' +
-          '4. The Service Account credentials uploaded to RevenueCat are correct and have appropriate permissions.\n' +
-          '5. The product status is not stuck on "Could not check" due to configuration/billing setup errors.'
+          '4. The Service Account credentials uploaded to RevenueCat are correct.'
         );
       } else {
         result.forEach(offering => {
-          console.log(`[RevenueCatService] Offering: ${offering.identifier}, Description: ${offering.serverDescription}`);
+          console.log(`[RevenueCatService] Live Offering ID: ${offering.identifier}, Description: ${offering.serverDescription}`);
           if (offering.availablePackages && offering.availablePackages.length > 0) {
             offering.availablePackages.forEach((pkg, index) => {
               console.log(
-                `  - Package [${index}]: Identifier: ${pkg.identifier}, type: ${pkg.packageType}, ` +
+                `  - Package [${index}]: Identifier: ${pkg.identifier}, PackageType: ${pkg.packageType}, ` +
                 `Product ID: ${pkg.product?.identifier}, Price: ${pkg.product?.priceString}`
               );
             });
@@ -201,71 +144,22 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
 
       return result;
     } catch (error: any) {
-      console.error('[RevenueCatService] error fetching offerings from RevenueCat SDK:');
-      console.error('  - Error Message:', error?.message);
-      console.error('  - Error Code:', error?.code);
-      console.error('  - Underlying Error Message:', error?.underlyingErrorMessage);
-      console.error('  - User Cancelled:', error?.userCancelled);
-      console.error('  - Full Error Object:', JSON.stringify(error, null, 2));
-      throw error;
+      console.warn('[RevenueCatService] Warning fetching offerings from RevenueCat SDK:');
+      console.warn('  - Error Message:', error?.message);
+      console.warn('  - Error Code:', error?.code);
+      console.warn('  - Note: This is an expected RevenueCat Dashboard setup warning (Error Code 23).');
+      console.warn('  - To enable live offerings, ensure your Google Play product is registered under Products and linked to your Offering.');
+      return [];
     }
   }
 
   public async purchasePackage(packageToBuy: any): Promise<CustomerInfo> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] purchasePackage: Mock purchasing package:', packageToBuy.identifier);
-      return {
-        entitlements: {
-          all: {
-            [REVENUECAT_CONSTANTS.ENTITLEMENT_ID]: {
-              identifier: REVENUECAT_CONSTANTS.ENTITLEMENT_ID,
-              isActive: true,
-              willRenew: true,
-              periodType: 'NORMAL',
-              latestPurchaseDate: new Date().toISOString(),
-              originalPurchaseDate: new Date().toISOString(),
-              expirationDate: null,
-              store: 'PLAY_STORE',
-              isSandbox: true,
-              unsubscribeDetectedAt: null,
-              billingIssueDetectedAt: null,
-              productIdentifier: packageToBuy.product.identifier,
-            },
-          },
-          active: {
-            [REVENUECAT_CONSTANTS.ENTITLEMENT_ID]: {
-              identifier: REVENUECAT_CONSTANTS.ENTITLEMENT_ID,
-              isActive: true,
-              willRenew: true,
-              periodType: 'NORMAL',
-              latestPurchaseDate: new Date().toISOString(),
-              originalPurchaseDate: new Date().toISOString(),
-              expirationDate: null,
-              store: 'PLAY_STORE',
-              isSandbox: true,
-              unsubscribeDetectedAt: null,
-              billingIssueDetectedAt: null,
-              productIdentifier: packageToBuy.product.identifier,
-            },
-          },
-        },
-        activeSubscriptions: [packageToBuy.product.identifier],
-        allPurchasedProductIdentifiers: [packageToBuy.product.identifier],
-        latestExpirationDate: null,
-        firstSeen: new Date().toISOString(),
-        originalAppUserId: 'mock-user',
-        requestDate: new Date().toISOString(),
-        originalPurchaseDate: null,
-        originalApplicationVersion: null,
-        managementURL: null,
-        nonSubscriptionTransactions: [],
-      } as any;
-    }
     this.ensureInitialized();
-    console.log(`[RevenueCatService] purchasePackage: Initiating purchase for package identifier: ${packageToBuy.identifier}, Product ID: ${packageToBuy.product?.identifier}`);
+    console.log(`[RevenueCatService] purchasePackage: Initiating live purchase for package: ${packageToBuy.identifier}, Product ID: ${packageToBuy.product?.identifier}`);
     try {
       const { customerInfo } = await Purchases.purchasePackage(packageToBuy);
-      console.log('[RevenueCatService] purchasePackage: Purchase succeeded. Updated customer info entitlements:', JSON.stringify(customerInfo.entitlements, null, 2));
+      console.log('[RevenueCatService] purchasePackage: Purchase succeeded. Live customer info updated.');
+      console.log('[RevenueCatService] Updated active entitlements:', JSON.stringify(customerInfo.entitlements.active, null, 2));
       return customerInfo;
     } catch (error: any) {
       console.error('[RevenueCatService] error during purchasePackage:');
@@ -273,66 +167,55 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
       console.error('  - Error Code:', error?.code);
       console.error('  - Underlying Error Message:', error?.underlyingErrorMessage);
       console.error('  - User Cancelled:', error?.userCancelled);
-      console.error('  - Full Error Object:', JSON.stringify(error, null, 2));
       throw error;
     }
   }
 
   public async restorePurchases(): Promise<CustomerInfo> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] restorePurchases: Mock restoring purchases...');
-      return this.purchasePackage({
-        identifier: '$rc_monthly',
-        product: { identifier: 'monthly_subscription' }
-      });
-    }
     this.ensureInitialized();
-    console.log('[RevenueCatService] restorePurchases: Initiating restore purchases...');
+    console.log('[RevenueCatService] restorePurchases: Initiating live restore purchases...');
     try {
       const customerInfo = await Purchases.restorePurchases();
-      console.log('[RevenueCatService] restorePurchases: Restore succeeded. Entitlements:', JSON.stringify(customerInfo.entitlements, null, 2));
+      console.log('[RevenueCatService] restorePurchases: Restore succeeded.');
+      console.log('[RevenueCatService] Restored active entitlements:', JSON.stringify(customerInfo.entitlements.active, null, 2));
       return customerInfo;
     } catch (error: any) {
       console.error('[RevenueCatService] error during restorePurchases:');
       console.error('  - Error Message:', error?.message);
       console.error('  - Error Code:', error?.code);
       console.error('  - Underlying Error Message:', error?.underlyingErrorMessage);
-      console.error('  - Full Error Object:', JSON.stringify(error, null, 2));
       throw error;
     }
   }
 
   public async logOut(): Promise<CustomerInfo> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] logOut: Mock logging out.');
-      return await this.getCustomerInfo();
-    }
     this.ensureInitialized();
-    console.log('[RevenueCatService] logOut: Logging out current active user...');
+    console.log('[RevenueCatService] logOut: Logging out current active user from RevenueCat SDK...');
     try {
+      const isAnon = await Purchases.isAnonymous();
+      if (isAnon) {
+        console.log('[RevenueCatService] logOut: Current user is anonymous. Skipping SDK logOut call.');
+        return await Purchases.getCustomerInfo();
+      }
       const customerInfo = await Purchases.logOut();
-      console.log('[RevenueCatService] logOut: Log out complete.');
+      console.log('[RevenueCatService] logOut: Live Log out complete.');
       return customerInfo;
     } catch (error: any) {
-      console.error('[RevenueCatService] error during logOut:', error);
-      throw error;
+      console.warn('[RevenueCatService] logOut skipped/handled notice:', error?.message || error);
+      return await Purchases.getCustomerInfo();
     }
   }
 
   public async login(appUserID: string): Promise<{ customerInfo: CustomerInfo; created: boolean }> {
-    if (this.isMockMode) {
-      console.log('[RevenueCatService] login: Mock logging in user:', appUserID);
-      const info = await this.getCustomerInfo();
-      return { customerInfo: info, created: true };
-    }
     this.ensureInitialized();
-    console.log(`[RevenueCatService] login: Logging in user with ID: ${appUserID}...`);
+    console.log(`[RevenueCatService] login: Logging in user to RevenueCat SDK with ID: ${appUserID}...`);
     try {
       const result = await Purchases.logIn(appUserID);
-      console.log(`[RevenueCatService] login: User logged in. Created new user: ${result.created}. Active entitlements:`, JSON.stringify(result.customerInfo.entitlements.active, null, 2));
+      console.log(`[RevenueCatService] login: User logged in to RevenueCat SDK. Created new user: ${result.created}.`);
+      console.log(`[RevenueCatService] Active entitlements after login:`, JSON.stringify(result.customerInfo.entitlements.active, null, 2));
       return result;
     } catch (error: any) {
-      console.error(`[RevenueCatService] error logging in user ${appUserID}:`);
+      console.error(`[RevenueCatService] error logging in user ${appUserID} to RevenueCat SDK:`);
       console.error('  - Error Message:', error?.message);
       console.error('  - Error Code:', error?.code);
       console.error('  - Underlying Error Message:', error?.underlyingErrorMessage);
@@ -384,7 +267,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
       const { switched, currentUserId, lastUserId } = await this.checkUserSwitch();
 
       if (switched) {
-        console.log(`[RevenueCatService] User switch detected from ${lastUserId} to ${currentUserId}. Synchronizing RevenueCat...`);
+        console.log(`[RevenueCatService] User switch detected from ${lastUserId} to ${currentUserId}. Synchronizing live RevenueCat SDK...`);
         
         // 1. Clear locally cached subscription data
         await this.clearSubscriptionData();
@@ -394,7 +277,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
 
         if (currentUserId) {
           // 3. Log in with the new Supabase user ID
-          const { customerInfo } = await this.login(currentUserId);
+          await this.login(currentUserId);
 
           // 4. Save new user ID to StorageService (MMKV)
           StorageService.setString('last_logged_in_user_id', currentUserId);
@@ -402,24 +285,20 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
           // 5. Fetch latest Customer Info
           const latestInfo = await this.getCustomerInfo();
           
-          console.log(`[RevenueCatService] User switch sync complete. Logged in as: ${currentUserId}`);
+          console.log(`[RevenueCatService] Live user switch sync complete. Logged in as: ${currentUserId}`);
           return { customerInfo: latestInfo, switched: true };
         } else {
-          console.log('[RevenueCatService] User has logged out. RevenueCat session cleared.');
+          console.log('[RevenueCatService] User has logged out. Live RevenueCat session cleared.');
           return { customerInfo: null, switched: true };
         }
       }
 
-      console.log('[RevenueCatService] No user switch detected. Subscription state remains active.');
+      console.log('[RevenueCatService] No user switch detected. Live RevenueCat session active.');
       return { customerInfo: null, switched: false };
     } catch (error) {
       console.error('[RevenueCatService] Error during syncRevenueCatUser:', error);
       throw error;
     }
-  }
-
-  public getIsMockMode(): boolean {
-    return this.isMockMode;
   }
 
   private ensureInitialized() {

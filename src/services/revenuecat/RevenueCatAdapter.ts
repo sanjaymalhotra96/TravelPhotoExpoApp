@@ -8,7 +8,6 @@ export interface IRevenueCatAdapter {
   restorePurchases(): Promise<CustomerInfo>;
   logOut(): Promise<CustomerInfo>;
   login(appUserID: string): Promise<{ customerInfo: CustomerInfo; created: boolean }>;
-  getIsMockMode(): boolean;
   checkUserSwitch(): Promise<{ switched: boolean; currentUserId: string | null; lastUserId: string | null }>;
   clearSubscriptionData(): Promise<void>;
   syncRevenueCatUser(): Promise<{ customerInfo: CustomerInfo | null; switched: boolean }>;

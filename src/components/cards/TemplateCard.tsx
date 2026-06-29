@@ -3,6 +3,7 @@ import { View, Text, Pressable, Image } from 'react-native';
 import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { TravelTemplate } from '@/constants';
 import { Icons } from '@/theme';
+import { useTheme } from '@/hooks/useTheme';
 
 interface TemplateCardProps {
   template: TravelTemplate;
@@ -12,6 +13,7 @@ interface TemplateCardProps {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onPress }) => {
+  const { colors } = useTheme();
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -47,7 +49,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onPress })
           </Text>
         </View>
         <View className="absolute top-3 right-3 bg-primary-500 rounded-full p-2 shadow-sm">
-          <Icons.Sparkles size={16} color="#ffffff" />
+          <Icons.Sparkles size={16} color={colors.white} />
         </View>
       </View>
       
@@ -64,7 +66,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onPress })
           <Text className="text-primary-600 dark:text-primary-400 font-semibold text-sm">
             Generate Now
           </Text>
-          <Icons.ChevronRight size={16} color="#8b5cf6" />
+          <Icons.ChevronRight size={16} color={colors.primary} />
         </View>
       </View>
     </AnimatedPressable>

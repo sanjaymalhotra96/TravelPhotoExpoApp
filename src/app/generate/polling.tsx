@@ -13,10 +13,12 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ErrorState } from '@/components/common/ErrorState';
 import { getGenerationParams, clearGenerationParams } from '@/store/generationStore';
+import { useTheme } from '@/hooks/useTheme';
 import { t } from '@/utils/i18n';
 
 export default function PollingScreen() {
   const router = useRouter();
+  const { colors } = useTheme();
   const { templateId: routeTemplateId, imageUri: rawImageUri } = useLocalSearchParams<{ templateId: string; imageUri: string }>();
 
   // Retrieve parameters from our memory-based store (bypasses URL param truncating issue in Expo Router)
@@ -212,12 +214,12 @@ export default function PollingScreen() {
           ) : null}
           <Animated.View
             style={animatedScannerStyle}
-            className="absolute left-0 right-0 h-1 bg-primary-500 shadow-[0_0_15px_#8b5cf6]"
+            className="absolute left-0 right-0 h-1 bg-primary-500 shadow-lg"
           />
         </View>
 
         <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl w-full items-center shadow-premium">
-          <ActivityIndicator color="#8b5cf6" size="large" className="mb-4" />
+          <ActivityIndicator color={colors.primary} size="large" className="mb-4" />
 
           <Text className="text-light-text dark:text-dark-text font-black text-xl mb-1 text-center">
             {t('generate.pollingTitle')}

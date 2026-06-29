@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack, router, useSegments } from 'expo-router';
-import { StatusBar, Platform } from 'react-native';
+import { StatusBar, Platform, View, Image, StyleSheet } from 'react-native';
 import * as NavigationBar from 'expo-navigation-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
@@ -197,31 +197,69 @@ function RootLayoutContent() {
     }
   }, [isAuthenticated, isLoading, isRecoveringPassword, segments]);
 
-  // Synchronize Android system navigation bar styling dynamically based on theme store
+  // Synchronize Android and iOS system bars (status bar & navigation bar) for immersive splash mode
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(colors.background).catch(() => {});
-      NavigationBar.setButtonStyleAsync(isDark ? 'light' : 'dark').catch(() => {});
+    if (isLoading) {
+      // Splash phase: hide status bar and navigation bar completely
+      StatusBar.setHidden(true, 'none');
+      if (Platform.OS === 'android') {
+        (async () => {
+          try {
+            await NavigationBar.setVisibilityAsync('hidden');
+            await NavigationBar.setPositionAsync('absolute');
+            await NavigationBar.setBackgroundColorAsync('#00000000');
+          } catch (e) {}
+        })();
+      }
+    } else {
+      // App initialized phase: restore status bar and system navigation bar
+      StatusBar.setHidden(false, 'fade');
+      StatusBar.setBarStyle('dark-content');
+      if (Platform.OS === 'android') {
+        StatusBar.setBackgroundColor('#ffffff');
+        StatusBar.setTranslucent(false);
+        (async () => {
+          try {
+            await NavigationBar.setVisibilityAsync('visible');
+            await NavigationBar.setPositionAsync('relative');
+            await NavigationBar.setBackgroundColorAsync('#ffffff');
+            await NavigationBar.setButtonStyleAsync('dark');
+          } catch (e) {}
+        })();
+      }
     }
-  }, [isDark, colors.background]);
+  }, [isLoading, isDark, colors.background]);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: colors.background }}>
-      <StatusBar
-        barStyle={isDark ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.background}
-      />
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="generate/[templateId]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="generate/polling" options={{ presentation: 'card' }} />
-        <Stack.Screen name="result/[jobId]" options={{ presentation: 'card' }} />
-        <Stack.Screen name="settings/index" options={{ presentation: 'modal' }} />
-        <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
-      </Stack>
-      <InternetBottomSheet />
-    </SafeAreaView>
+    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+        <StatusBar
+          barStyle="dark-content"
+          backgroundColor="#ffffff"
+          translucent={false}
+        />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="generate/[templateId]" options={{ presentation: 'card' }} />
+          <Stack.Screen name="generate/polling" options={{ presentation: 'card' }} />
+          <Stack.Screen name="result/[jobId]" options={{ presentation: 'card' }} />
+          <Stack.Screen name="settings/index" options={{ presentation: 'modal' }} />
+          <Stack.Screen name="paywall" options={{ presentation: 'modal' }} />
+        </Stack>
+        <InternetBottomSheet />
+      </SafeAreaView>
+
+      {isLoading && (
+        <View style={[StyleSheet.absoluteFill, { zIndex: 99999, backgroundColor: colors.background }]}>
+          <Image
+            source={require('../../assets/splash.png')}
+            style={{ width: '100%', height: '100%' }}
+            resizeMode="cover"
+          />
+        </View>
+      )}
+    </View>
   );
 }
 

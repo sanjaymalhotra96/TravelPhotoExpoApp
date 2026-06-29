@@ -2,7 +2,7 @@
   "expo": {
     "name": "TravelPhotoExpoApp",
     "slug": "travel-photo-expo-app",
-    "version": "2.0.3",
+    "version": "2.0.5",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
@@ -17,11 +17,16 @@
     "androidNavigationBar": {
       "visible": "always",
       "barStyle": "dark-content",
-      "backgroundColor": "#00000000"
+      "backgroundColor": "#ffffff"
     },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "travel.photos",
+      "splash": {
+        "image": "./assets/splash.png",
+        "resizeMode": "cover",
+        "backgroundColor": "#ffffff"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "This app requires access to your camera to take travel photo captures.",
         "NSPhotoLibraryUsageDescription": "This app requires access to your photo library to pick images for travel transformations."
@@ -29,7 +34,7 @@
     },
     "android": {
       "package": "travel.photos",
-      "versionCode": 5,
+      "versionCode": 7,
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"

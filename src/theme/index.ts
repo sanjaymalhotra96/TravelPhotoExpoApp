@@ -31,10 +31,14 @@ import {
 export const COLORS = {
   primary: '#8b5cf6', // Indigo-500
   primaryHover: '#7c3aed',
+  secondary: '#ff1f75',
   accent: '#ff1f75',
   success: '#10b981',
   warning: '#f59e0b',
   danger: '#ef4444',
+  white: '#ffffff',
+  black: '#000000',
+  google: '#ea4335',
   
   // Light Mode Tokens
   light: {
