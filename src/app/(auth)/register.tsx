@@ -121,7 +121,7 @@ export default function RegisterScreen() {
                       errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                     } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.register.emailPlaceholder')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={COLORS.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
@@ -157,7 +157,7 @@ export default function RegisterScreen() {
                       errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                     } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.register.passwordPlaceholder')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={COLORS.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
@@ -203,7 +203,7 @@ export default function RegisterScreen() {
                       errors.confirmPassword ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                     } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.register.passwordPlaceholder')}
-                    placeholderTextColor="#94a3b8"
+                    placeholderTextColor={COLORS.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />

@@ -17,7 +17,7 @@ try {
 export default function PaywallRoute() {
   const { refreshSubscription } = useRevenueCat();
   
-  const iconColor = '#111827';
+  const iconColor = COLORS.text;
 
   // Determine whether to show the native designed RevenueCat dashboard paywall
   const showNativePaywall = Platform.OS !== 'web' && RevenueCatUI !== null;

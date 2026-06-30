@@ -35,7 +35,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
           <Text className="text-light-text dark:text-dark-text font-extrabold text-xl mb-2 text-center">
             {title}
           </Text>
-          
+
           <Text className="text-light-muted dark:text-dark-muted text-sm text-center leading-relaxed mb-6">
             {description}
           </Text>
@@ -54,11 +54,10 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
             <View className="w-[47%]">
               <Pressable
                 onPress={onConfirm}
-                className={`w-full flex-row items-center justify-center py-4 px-6 rounded-2xl ${
-                  confirmVariant === 'danger' ? 'bg-danger active:bg-danger-dark' : 'bg-primary-500 active:bg-primary-600'
-                } shadow-premium`}
+                className={`w-full flex-row items-center justify-center py-4 px-6  rounded-2xl border border-red-500 ${confirmVariant === 'danger' ? 'bg-danger active:bg-danger-dark' : 'bg-primary-500 active:bg-primary-600'
+                  } shadow-premium`}
               >
-                <Text className="text-white text-base font-semibold text-center tracking-wide">
+                <Text className="text-red-500 text-base font-semibold text-center tracking-wide">
                   {confirmText}
                 </Text>
               </Pressable>

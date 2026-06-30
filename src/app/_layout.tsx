@@ -215,13 +215,13 @@ function RootLayoutContent() {
       StatusBar.setHidden(false, 'fade');
       StatusBar.setBarStyle('dark-content');
       if (Platform.OS === 'android') {
-        StatusBar.setBackgroundColor('#ffffff');
+        StatusBar.setBackgroundColor(COLORS.white);
         StatusBar.setTranslucent(false);
         (async () => {
           try {
             await NavigationBar.setVisibilityAsync('visible');
             await NavigationBar.setPositionAsync('relative');
-            await NavigationBar.setBackgroundColorAsync('#ffffff');
+            await NavigationBar.setBackgroundColorAsync(COLORS.white);
             await NavigationBar.setButtonStyleAsync('dark');
           } catch (e) {}
         })();
@@ -230,11 +230,11 @@ function RootLayoutContent() {
   }, [isLoading]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
+    <View style={{ flex: 1, backgroundColor: COLORS.white }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
         <StatusBar
           barStyle="dark-content"
-          backgroundColor="#ffffff"
+          backgroundColor={COLORS.white}
           translucent={false}
         />
         <Stack screenOptions={{ headerShown: false }}>
