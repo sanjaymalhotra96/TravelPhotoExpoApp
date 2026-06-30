@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Platform, Alert } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useRevenueCat } from '@/providers/revenuecat-provider';
-import { useTheme } from '@/hooks/useTheme';
+import { useRevenueCat } from '@/features/billing/providers/revenuecat-provider';
+import { COLORS } from '@/theme';
 import { t } from '@/utils/i18n';
 
 // Safely require PurchasesUI to avoid crashing environments where it isn't linked/present (like Expo Go or Web)
@@ -17,8 +17,7 @@ try {
 export default function PaywallRoute() {
   const { refreshSubscription } = useRevenueCat();
   
-  const { colorScheme, colors } = useTheme();
-  const iconColor = colorScheme === 'dark' ? '#f3f4f6' : '#111827';
+  const iconColor = '#111827';
 
   // Determine whether to show the native designed RevenueCat dashboard paywall
   const showNativePaywall = Platform.OS !== 'web' && RevenueCatUI !== null;
@@ -59,7 +58,7 @@ export default function PaywallRoute() {
         </TouchableOpacity>
       </View>
       
-      <Ionicons name="alert-circle-outline" size={64} color={colors.primary} />
+      <Ionicons name="alert-circle-outline" size={64} color={COLORS.primary} />
       
       <Text className="text-2xl font-black text-light-text dark:text-dark-text mt-6 mb-2 text-center">
         {t('paywall.unavailableTitle')}
@@ -70,7 +69,7 @@ export default function PaywallRoute() {
       </Text>
       
       <TouchableOpacity
-        style={{ backgroundColor: colors.primary }}
+        style={{ backgroundColor: COLORS.primary }}
         className="px-8 py-3.5 rounded-xl shadow-lg"
         onPress={() => router.back()}
         activeOpacity={0.8}

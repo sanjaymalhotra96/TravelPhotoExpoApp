@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, ScrollView, ActivityIndicator } from 'react-native';
-import { useProfile } from '@/hooks/useProfile';
-import { useAuthStore } from '@/store/authStore';
+import { useProfile } from '@/features/profile/hooks/useProfile';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { HistoryItem } from '@/constants';
-import { ImageCard } from '@/components/cards/ImageCard';
-import { ImageViewer } from '@/components/common/ImageViewer';
-import { ConfirmationDialog } from '@/components/dialogs/ConfirmationDialog';
-import { EmptyState } from '@/components/common/EmptyState';
-import { ErrorState } from '@/components/common/ErrorState';
-import { useTheme } from '@/hooks/useTheme';
-import { Icons } from '@/theme';
+import { ImageCard } from '@/features/profile/components/ImageCard';
+import { ImageViewer } from '@/shared/components/common/ImageViewer';
+import { ConfirmationDialog } from '@/shared/components/dialogs/ConfirmationDialog';
+import { EmptyState } from '@/shared/components/common/EmptyState';
+import { ErrorState } from '@/shared/components/common/ErrorState';
+import { COLORS, Icons } from '@/theme';
 import { t } from '@/utils/i18n';
 
 export default function ProfileScreen() {
   const { data: profileData, isLoading, error, refetch } = useProfile();
   const logoutUser = useAuthStore((state) => state.logout);
-  const { colors } = useTheme();
 
   const [viewerVisible, setViewerVisible] = useState(false);
   const [selectedImageUrl, setSelectedImageUrl] = useState('');
@@ -47,7 +45,7 @@ export default function ProfileScreen() {
   if (isLoading) {
     return (
       <View className="flex-1 bg-light-bg dark:bg-dark-bg justify-center items-center">
-        <ActivityIndicator color={colors.primary} size="large" />
+        <ActivityIndicator color={COLORS.primary} size="large" />
         <Text className="text-light-muted dark:text-dark-muted text-sm mt-3">{t('tabs.profile.loading')}</Text>
       </View>
     );
@@ -75,7 +73,7 @@ export default function ProfileScreen() {
           }}
           className="flex-row items-center bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-full border border-red-100 dark:border-red-950 active:bg-red-100 dark:active:bg-red-900/35"
         >
-          <Icons.LogOut size={16} color={colors.danger} className="mr-2" />
+          <Icons.LogOut size={16} color={COLORS.danger} className="mr-2" />
           <Text className="text-red-500 font-bold text-xs">{t('tabs.profile.signOutBtn')}</Text>
         </Pressable>
       </View>

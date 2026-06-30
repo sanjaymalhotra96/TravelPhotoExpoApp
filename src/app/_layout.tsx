@@ -7,9 +7,8 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import * as Linking from 'expo-linking';
 import * as SplashScreen from 'expo-splash-screen';
-import { supabase } from '@/lib/supabase';
-import { useAuthStore, setPendingRecovery } from '@/store/authStore';
-import { useTheme } from '@/hooks/useTheme';
+import { supabase } from '@/shared/lib/supabase';
+import { useAuthStore, setPendingRecovery } from '@/features/auth/store/authStore';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync().catch(() => {});
@@ -17,9 +16,10 @@ SplashScreen.preventAutoHideAsync().catch(() => {});
 // Import NativeWind compiled stylesheet
 import '@/theme/global.css';
 
-import { RevenueCatProvider } from '@/providers/revenuecat-provider';
-import { InternetProvider } from '@/providers/InternetProvider';
-import { InternetBottomSheet } from '@/components/InternetBottomSheet';
+import { RevenueCatProvider } from '@/features/billing/providers/revenuecat-provider';
+import { InternetProvider } from '@/shared/providers/InternetProvider';
+import { InternetBottomSheet } from '@/shared/components/InternetBottomSheet';
+import { COLORS } from '@/theme';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,7 +36,6 @@ function RootLayoutContent() {
   console.log('====================================================');
 
   const { isAuthenticated, isLoading, isRecoveringPassword } = useAuthStore();
-  const { colors, isDark } = useTheme();
   const segments = useSegments();
 
   // Handle incoming deep links (especially for password recovery)
@@ -228,7 +227,7 @@ function RootLayoutContent() {
         })();
       }
     }
-  }, [isLoading, isDark, colors.background]);
+  }, [isLoading]);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#ffffff' }}>
@@ -251,7 +250,7 @@ function RootLayoutContent() {
       </SafeAreaView>
 
       {isLoading && (
-        <View style={[StyleSheet.absoluteFill, { zIndex: 99999, backgroundColor: colors.background }]}>
+        <View style={[StyleSheet.absoluteFill, { zIndex: 99999, backgroundColor: COLORS.background }]}>
           <Image
             source={require('../../assets/splash.png')}
             style={{ width: '100%', height: '100%' }}

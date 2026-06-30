@@ -4,10 +4,9 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Link, useRouter } from 'expo-router';
-import { useLogin } from '@/hooks/useLogin';
-import { Toast } from '@/components/common/Toast';
-import { useTheme } from '@/hooks/useTheme';
-import { Icons } from '@/theme';
+import { useLogin } from '@/features/auth/hooks/useLogin';
+import { Toast } from '@/shared/components/common/Toast';
+import { COLORS, Icons } from '@/theme';
 import { t } from '@/utils/i18n';
 
 // Validation constraints
@@ -20,7 +19,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginScreen() {
   const { mutateAsync: loginUser, isPending } = useLogin();
-  const { colors } = useTheme();
 
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -80,7 +78,7 @@ export default function LoginScreen() {
       >
         <View className="items-center mb-8">
           <View className="bg-primary-500 rounded-2xl p-4 mb-4 shadow-premium">
-            <Icons.Sparkles size={32} color="#ffffff" />
+            <Icons.Sparkles size={32} color={COLORS.white} />
           </View>
           <Text className="text-light-text dark:text-dark-text text-3xl font-black tracking-tight mb-1 text-center">
             {t('auth.login.title')}
@@ -113,7 +111,7 @@ export default function LoginScreen() {
                     className={`w-full bg-white dark:bg-dark-card border ${errors.email ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                       } rounded-xl py-3.5 pr-4 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.emailPlaceholder')}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={COLORS.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
@@ -148,7 +146,7 @@ export default function LoginScreen() {
                     className={`w-full bg-white dark:bg-dark-card border ${errors.password ? 'border-red-500' : 'border-light-border dark:border-dark-border'
                       } rounded-xl py-3.5 pr-12 pl-11 text-light-text dark:text-dark-text text-sm shadow-sm`}
                     placeholder={t('auth.login.passwordPlaceholder')}
-                    placeholderTextColor={colors.textMuted}
+                    placeholderTextColor={COLORS.textMuted}
                     autoCapitalize="none"
                     autoCorrect={false}
                   />
@@ -190,7 +188,7 @@ export default function LoginScreen() {
           >
             {isPending ? (
               <View className="flex-row items-center justify-center">
-                <ActivityIndicator color="#ffffff" size="small" className="mr-2.5" />
+                <ActivityIndicator color={COLORS.white} size="small" className="mr-2.5" />
                 <Text className="text-white text-base font-semibold text-center tracking-wide">
                   {t('auth.login.loggingIn')}
                 </Text>
@@ -217,7 +215,7 @@ export default function LoginScreen() {
             className={`flex-row items-center justify-center bg-white dark:bg-dark-card border border-light-border dark:border-dark-border py-3.5 rounded-2xl active:bg-slate-50 dark:active:bg-zinc-800 shadow-sm ${Platform.OS === 'ios' ? 'w-[47%]' : 'w-full'
               }`}
           >
-            <Icons.User size={18} color="#ea4335" className="mr-2" />
+            <Icons.User size={18} color={COLORS.google} className="mr-2" />
             <Text className="text-light-text dark:text-dark-text font-bold text-sm">{t('auth.login.googleButton')}</Text>
           </Pressable>
 

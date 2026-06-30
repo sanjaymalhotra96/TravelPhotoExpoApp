@@ -5,17 +5,15 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Haptics from 'expo-haptics';
-import { templatesApi } from '@/api/templates';
-import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { LoadingOverlay } from '@/components/loaders/LoadingOverlay';
-import { Icons } from '@/theme';
-import { useTheme } from '@/hooks/useTheme';
+import { studioRepository } from '@/features/studio/services/studioRepository';
+import { ScreenHeader } from '@/shared/components/common/ScreenHeader';
+import { LoadingOverlay } from '@/shared/components/loaders/LoadingOverlay';
+import { Icons, COLORS } from '@/theme';
 import { t } from '@/utils/i18n';
 
 export default function ResultScreen() {
   const router = useRouter();
   const queryClient = useQueryClient();
-  const { colors } = useTheme();
 
   const { jobId, templateId, resultUrl, imageUri, templateUrl, isMock } =
     useLocalSearchParams<{
@@ -53,7 +51,7 @@ export default function ResultScreen() {
   // Fetch template metadata for label display
   const { data: template } = useQuery({
     queryKey: ['template', templateId],
-    queryFn: () => templatesApi.getTemplateById(templateId || ''),
+    queryFn: () => studioRepository.getTemplateById(templateId || ''),
     enabled: !!templateId,
   });
 
@@ -181,7 +179,7 @@ export default function ResultScreen() {
             {/* Template name badge */}
             <View className="absolute bottom-4 left-4 right-4 bg-slate-900/80 p-4 rounded-2xl flex-row items-center border border-white/10">
               <View className="bg-primary-500 rounded-full p-2 mr-3">
-                <Icons.Sparkles size={16} color="#ffffff" />
+                <Icons.Sparkles size={16} color={COLORS.white} />
               </View>
               <View className="flex-1">
                 <Text className="text-white/60 text-[10px] font-semibold uppercase tracking-wider">
@@ -197,7 +195,7 @@ export default function ResultScreen() {
           {/* ── Info Strip ─────────────────────────────────────────────────── */}
           {isMockMode ? (
             <View className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-2xl px-4 py-3 mb-4 flex-row items-start">
-              <Icons.Warning size={16} color={colors.warning} style={{ marginTop: 1, marginRight: 8 }} />
+              <Icons.Warning size={16} color={COLORS.warning} style={{ marginTop: 1, marginRight: 8 }} />
               <View className="flex-1">
                 <Text className="text-amber-700 dark:text-amber-400 font-bold text-xs mb-0.5">
                   {t('generate.resultDemoActiveTitle')}
@@ -209,7 +207,7 @@ export default function ResultScreen() {
             </View>
           ) : (
             <View className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 rounded-2xl px-4 py-3 mb-4 flex-row items-center">
-              <Icons.Check size={16} color={colors.success} style={{ marginRight: 8 }} />
+              <Icons.Check size={16} color={COLORS.success} style={{ marginRight: 8 }} />
               <Text className="text-emerald-700 dark:text-emerald-400 font-semibold text-xs flex-1">
                 {t('generate.resultRealAiSuccess')}
               </Text>
@@ -257,7 +255,7 @@ export default function ResultScreen() {
             >
               <View className="flex-row items-center justify-center">
                 <View className="mr-2.5">
-                  <Icons.Refresh size={18} color="#ffffff" />
+                  <Icons.Refresh size={18} color={COLORS.white} />
                 </View>
                 <Text className="text-white text-base font-bold text-center tracking-wide">
                   {t('generate.resultGenerateAgainBtn')}

@@ -2,19 +2,18 @@ import React, { useState } from 'react';
 import { View, Text, ScrollView, Pressable, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import * as Haptics from 'expo-haptics';
-import { ScreenHeader } from '@/components/common/ScreenHeader';
-import { useTheme } from '@/hooks/useTheme';
-import { useAuthStore } from '@/store/authStore';
+import { ScreenHeader } from '@/shared/components/common/ScreenHeader';
+import { COLORS } from '@/theme';
+import { useAuthStore } from '@/features/auth/store/authStore';
 import { CONFIG } from '@/constants';
-import { ConfirmationDialog } from '@/components/dialogs/ConfirmationDialog';
+import { ConfirmationDialog } from '@/shared/components/dialogs/ConfirmationDialog';
 import { Icons } from '@/theme';
-import { apiClient } from '@/services/api/client';
+import { apiClient } from '@/shared/services/apiClient';
 import { t } from '@/utils/i18n';
-import { useRevenueCat } from '@/providers/revenuecat-provider';
+import { useRevenueCat } from '@/features/billing/providers/revenuecat-provider';
 
 export default function SettingsScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
   const { logout } = useAuthStore();
   const { isPremium } = useRevenueCat();
 
@@ -62,7 +61,7 @@ export default function SettingsScreen() {
             <View className="flex-row items-center justify-between">
               <View className="flex-row items-center flex-1 pr-4">
                 <View className="bg-purple-50 dark:bg-purple-950/40 p-2.5 rounded-xl mr-3">
-                  <Icons.Sparkles size={22} color={colors.primary} />
+                  <Icons.Sparkles size={22} color={COLORS.primary} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-light-text dark:text-dark-text font-extrabold text-lg">
@@ -89,7 +88,7 @@ export default function SettingsScreen() {
             <View className="flex-row items-center justify-between mb-4">
               <View className="flex-row items-center flex-1 pr-4">
                 <View className="bg-slate-100 dark:bg-zinc-800/80 p-2.5 rounded-xl mr-3">
-                  <Icons.Sparkles size={22} color={colors.textMuted} />
+                  <Icons.Sparkles size={22} color={COLORS.textMuted} />
                 </View>
                 <View className="flex-1">
                   <Text className="text-light-text dark:text-dark-text font-bold text-base">
@@ -149,7 +148,7 @@ export default function SettingsScreen() {
           >
             <View className="flex-row items-center">
               <View className="bg-red-50 dark:bg-red-950/20 p-2 rounded-xl mr-3">
-                <Icons.DeleteAccount size={20} color={colors.danger} />
+                <Icons.DeleteAccount size={20} color={COLORS.danger} />
               </View>
               <View>
                 <Text className="text-red-500 font-bold text-base">{t('settings.deleteAccountTitle')}</Text>

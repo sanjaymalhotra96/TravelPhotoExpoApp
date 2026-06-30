@@ -40,6 +40,13 @@ export const COLORS = {
   black: '#000000',
   google: '#ea4335',
   
+  // Default values
+  background: '#f8fafc',
+  card: '#ffffff',
+  border: '#e2e8f0',
+  text: '#0f172a',
+  textMuted: '#64748b',
+
   // Light Mode Tokens
   light: {
     background: '#f8fafc',

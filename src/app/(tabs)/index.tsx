@@ -2,19 +2,17 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import { useTemplates } from '@/hooks/useTemplates';
+import { useTemplates } from '@/features/studio/hooks/useTemplates';
 import { TravelTemplate } from '@/constants';
-import { TemplateCard } from '@/components/cards/TemplateCard';
-import { FullScreenLoader } from '@/components/loaders/FullScreenLoader';
-import { ErrorState } from '@/components/common/ErrorState';
-import { EmptyState } from '@/components/common/EmptyState';
-import { Icons } from '@/theme';
-import { useTheme } from '@/hooks/useTheme';
+import { TemplateCard } from '@/features/studio/components/TemplateCard';
+import { FullScreenLoader } from '@/shared/components/loaders/FullScreenLoader';
+import { ErrorState } from '@/shared/components/common/ErrorState';
+import { EmptyState } from '@/shared/components/common/EmptyState';
+import { COLORS, Icons } from '@/theme';
 import { t } from '@/utils/i18n';
 
 export default function DashboardScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
   const { data: templates, isLoading, error, refetch } = useTemplates();
 
   const handleSelectTemplate = (templateId: string) => {
@@ -39,7 +37,7 @@ export default function DashboardScreen() {
       <View className="w-full flex-row items-center justify-between px-5 py-4 border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-card">
         <View className="flex-row items-center">
           <View className="bg-primary-500 rounded-full p-2 mr-3.5">
-            <Icons.Sparkles size={18} color="#ffffff" />
+            <Icons.Sparkles size={18} color={COLORS.white} />
           </View>
           <Text className="text-light-text dark:text-dark-text text-xl font-bold tracking-tight">
             {t('tabs.studio.title')}
@@ -50,7 +48,7 @@ export default function DashboardScreen() {
           onPress={handleSettingsPress}
           className="p-2.5 rounded-full bg-slate-50 dark:bg-zinc-800/60 border border-light-border dark:border-dark-border active:bg-slate-100 dark:active:bg-zinc-700"
         >
-          <Icons.Settings size={20} color={colors.text} />
+          <Icons.Settings size={20} color={COLORS.text} />
         </Pressable>
       </View>
 

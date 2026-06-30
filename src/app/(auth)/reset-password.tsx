@@ -4,11 +4,10 @@ import { useForm, useWatch, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { router } from 'expo-router';
-import { supabase } from '@/lib/supabase';
-import { useAuthStore, setPendingRecovery } from '@/store/authStore';
-import { Toast } from '@/components/common/Toast';
-import { useTheme } from '@/hooks/useTheme';
-import { Icons } from '@/theme';
+import { supabase } from '@/shared/lib/supabase';
+import { useAuthStore, setPendingRecovery } from '@/features/auth/store/authStore';
+import { Toast } from '@/shared/components/common/Toast';
+import { COLORS, Icons } from '@/theme';
 import { t } from '@/utils/i18n';
 
 // Password recovery schema with strength validation
@@ -31,7 +30,6 @@ const resetPasswordSchema = z
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPasswordScreen() {
-  const { colors } = useTheme();
   const [loading, setLoading] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -143,7 +141,7 @@ export default function ResetPasswordScreen() {
       >
         <View className="items-center mb-6">
           <View className="bg-primary-500 rounded-2xl p-4 mb-4 shadow-premium">
-            <Icons.Lock size={32} color="#ffffff" />
+            <Icons.Lock size={32} color={COLORS.white} />
           </View>
           <Text className="text-light-text dark:text-dark-text text-3xl font-black tracking-tight mb-1 text-center">
             {t('auth.resetPassword.title')}
@@ -271,7 +269,7 @@ export default function ResetPasswordScreen() {
             >
               {loading ? (
                 <View className="flex-row items-center justify-center">
-                  <ActivityIndicator color="#ffffff" size="small" className="mr-2.5" />
+                  <ActivityIndicator color={COLORS.white} size="small" className="mr-2.5" />
                   <Text className="text-white text-base font-semibold text-center tracking-wide">
                     {t('auth.resetPassword.resetting')}
                   </Text>

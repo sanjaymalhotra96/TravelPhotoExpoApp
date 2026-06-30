@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGenerateImage } from '@/hooks/useGenerateImage';
-import { useJobStatus } from '@/hooks/useJobStatus';
+import { useGenerateImage } from '@/features/studio/hooks/useGenerateImage';
+import { useJobStatus } from '@/features/studio/hooks/useJobStatus';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -11,14 +11,13 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import { ErrorState } from '@/components/common/ErrorState';
-import { getGenerationParams, clearGenerationParams } from '@/store/generationStore';
-import { useTheme } from '@/hooks/useTheme';
+import { ErrorState } from '@/shared/components/common/ErrorState';
+import { getGenerationParams, clearGenerationParams } from '@/features/studio/store/generationStore';
+import { COLORS } from '@/theme';
 import { t } from '@/utils/i18n';
 
 export default function PollingScreen() {
   const router = useRouter();
-  const { colors } = useTheme();
   const { templateId: routeTemplateId, imageUri: rawImageUri } = useLocalSearchParams<{ templateId: string; imageUri: string }>();
 
   // Retrieve parameters from our memory-based store (bypasses URL param truncating issue in Expo Router)
@@ -219,7 +218,7 @@ export default function PollingScreen() {
         </View>
 
         <View className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border p-6 rounded-3xl w-full items-center shadow-premium">
-          <ActivityIndicator color={colors.primary} size="large" className="mb-4" />
+          <ActivityIndicator color={COLORS.primary} size="large" className="mb-4" />
 
           <Text className="text-light-text dark:text-dark-text font-black text-xl mb-1 text-center">
             {t('generate.pollingTitle')}
