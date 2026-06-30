@@ -60,7 +60,7 @@ export default function LoginScreen() {
       await loginUser({ email: '', provider });
       showToast(provider === 'google' ? t('auth.login.googleSuccessToast') : t('auth.login.appleSuccessToast'), 'success');
     } catch (e: any) {
-      showToast(`OAuth failure: ${e?.message}`, 'error');
+      showToast(t('auth.login.oauthFailure', { error: e?.message || '' }), 'error');
     }
   };
 

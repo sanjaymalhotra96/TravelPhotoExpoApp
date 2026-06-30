@@ -11,7 +11,16 @@
     "errorTitle": "Something Went Wrong",
     "errorMessage": "An unexpected error occurred. Please try again.",
     "generatedOn": "Generated on {date}",
-    "generateNow": "Generate Now"
+    "generateNow": "Generate Now",
+    "permissionDenied": "Permission Denied",
+    "cameraPermissionDesc": "Camera permissions are required to take photo captures.",
+    "galleryPermissionDesc": "Gallery library permissions are required to pick images.",
+    "loadingDetails": "Loading details...",
+    "success": "Success",
+    "internetOfflineTitle": "No Internet Connection",
+    "internetOfflineDesc": "Please check your internet connection and try again.",
+    "internetOnlineTitle": "Back Online",
+    "internetOnlineDesc": "Your internet connection has been restored."
   },
   "auth": {
     "validation": {
@@ -38,7 +47,8 @@
       "successToast": "Login successful!",
       "errorToast": "Login failed. Please verify credentials.",
       "googleSuccessToast": "Google Sign-In successful!",
-      "appleSuccessToast": "Apple Sign-In successful!"
+      "appleSuccessToast": "Apple Sign-In successful!",
+      "oauthFailure": "OAuth failure: {error}"
     },
     "register": {
       "title": "Create Account",
@@ -53,7 +63,8 @@
       "hasAccount": "Already have an account?",
       "loginLink": "Log In",
       "successToast": "Account created! Check your email to confirm your account, then log in.",
-      "errorToast": "Registration failed. Please try again."
+      "errorToast": "Registration failed. Please try again.",
+      "oauthFailure": "OAuth failure: {error}"
     },
     "forgotPassword": {
       "title": "Reset Password",
@@ -100,7 +111,8 @@
       "chooseDestination": "Choose Destination",
       "subtitle": "Select a scenic category below, add a photo, and teletransport yourself anywhere.",
       "loading": "Retrieving travel catalogs...",
-      "error": "Could not load travel destination categories."
+      "error": "Could not load travel destination categories.",
+      "tabLabel": "Studio"
     },
     "profile": {
       "title": "Profile Settings",
@@ -112,7 +124,8 @@
       "statsActive": "Active",
       "statsStatus": "Status",
       "logoutConfirmTitle": "Confirm Logout",
-      "logoutConfirmDesc": "Are you sure you want to end your current authentication session?"
+      "logoutConfirmDesc": "Are you sure you want to end your current authentication session?",
+      "tabLabel": "Profile"
     }
   },
   "generate": {
@@ -194,5 +207,12 @@
     "processCompleteTitle": "Process Complete",
     "processCompleteDesc": "Session ended successfully.",
     "legalMockAlert": "This is a mockup placeholder for the {title} page."
+  },
+  "paywall": {
+    "purchaseSuccess": "Thank you for your purchase!",
+    "restoreSuccess": "Purchases restored successfully!",
+    "unavailableTitle": "Paywall Unavailable",
+    "unavailableDesc": "Unable to load the native subscription screen. Please verify your internet connection or check your RevenueCat dashboard offerings configuration.",
+    "goBack": "Go Back"
   }
 }

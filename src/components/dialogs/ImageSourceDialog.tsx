@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Modal, Pressable } from 'react-native';
 import { Icons } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from '@/utils/i18n';
 
 interface ImageSourceDialogProps {
   visible: boolean;
@@ -33,7 +34,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
           <View className="w-12 h-1.5 bg-slate-200 dark:bg-zinc-700 rounded-full mb-6 self-center" />
           
           <Text className="text-light-text dark:text-dark-text text-lg font-bold mb-5 text-center">
-            Upload Travel Headshot
+            {t('generate.imageSourceTitle')}
           </Text>
 
           <View className="flex-row justify-around mb-6">
@@ -48,7 +49,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
                 <Icons.Camera size={26} color={colors.primary} />
               </View>
               <Text className="text-light-text dark:text-dark-text font-semibold text-sm">
-                Camera
+                {t('generate.cameraBtn')}
               </Text>
             </Pressable>
 
@@ -63,7 +64,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
                 <Icons.Image size={26} color={colors.secondary} />
               </View>
               <Text className="text-light-text dark:text-dark-text font-semibold text-sm">
-                Gallery
+                {t('generate.galleryBtn')}
               </Text>
             </Pressable>
           </View>
@@ -73,7 +74,7 @@ export const ImageSourceDialog: React.FC<ImageSourceDialogProps> = ({
             className="w-full bg-slate-100 dark:bg-zinc-800 py-3.5 rounded-xl active:bg-slate-200 dark:active:bg-zinc-750"
           >
             <Text className="text-light-text dark:text-dark-text text-center font-bold text-sm">
-              Cancel
+              {t('common.cancel')}
             </Text>
           </Pressable>
         </View>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from '@/utils/i18n';
 
 interface LoadingOverlayProps {
   visible: boolean;
   message?: string;
 }
 
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message = 'Processing...' }) => {
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ visible, message = t('common.processing') }) => {
   const { colors } = useTheme();
 
   if (!visible) return null;

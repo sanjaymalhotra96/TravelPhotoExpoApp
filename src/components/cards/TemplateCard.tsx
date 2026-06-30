@@ -4,6 +4,7 @@ import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-na
 import { TravelTemplate } from '@/constants';
 import { Icons } from '@/theme';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from '@/utils/i18n';
 
 interface TemplateCardProps {
   template: TravelTemplate;
@@ -64,7 +65,7 @@ export const TemplateCard: React.FC<TemplateCardProps> = ({ template, onPress })
 
         <View className="flex-row items-center justify-between bg-primary-50 dark:bg-primary-900/20 py-2.5 px-4 rounded-xl">
           <Text className="text-primary-600 dark:text-primary-400 font-semibold text-sm">
-            Generate Now
+            {t('common.generateNow')}
           </Text>
           <Icons.ChevronRight size={16} color={colors.primary} />
         </View>

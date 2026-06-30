@@ -1,12 +1,13 @@
 import React from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from '@/utils/i18n';
 
 interface FullScreenLoaderProps {
   message?: string;
 }
 
-export const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({ message = 'Loading details...' }) => {
+export const FullScreenLoader: React.FC<FullScreenLoaderProps> = ({ message = t('common.loadingDetails') }) => {
   const { colors } = useTheme();
 
   return (

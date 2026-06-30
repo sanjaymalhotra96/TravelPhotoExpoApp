@@ -1,5 +1,6 @@
 import * as ImagePicker from 'expo-image-picker';
 import { Alert } from 'react-native';
+import { t } from './i18n';
 
 export interface SelectedImage {
   uri: string;
@@ -16,7 +17,7 @@ export const ImagePickerHelper = {
     try {
       const cameraPermission = await ImagePicker.requestCameraPermissionsAsync();
       if (!cameraPermission.granted) {
-        Alert.alert('Permission Denied', 'Camera permissions are required to take photo captures.');
+        Alert.alert(t('common.permissionDenied'), t('common.cameraPermissionDesc'));
         return null;
       }
 
@@ -50,7 +51,7 @@ export const ImagePickerHelper = {
     try {
       const libraryPermission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!libraryPermission.granted) {
-        Alert.alert('Permission Denied', 'Gallery library permissions are required to pick images.');
+        Alert.alert(t('common.permissionDenied'), t('common.galleryPermissionDesc'));
         return null;
       }
 

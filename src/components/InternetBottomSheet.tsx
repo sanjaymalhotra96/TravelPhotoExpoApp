@@ -3,6 +3,7 @@ import { View, Text, Modal } from 'react-native';
 import { useInternet } from '@/hooks/useInternet';
 import { useTheme } from '@/hooks/useTheme';
 import { WifiOff, CheckCircle } from 'lucide-react-native';
+import { t } from '@/utils/i18n';
 
 export const InternetBottomSheet = () => {
   const { isOnline, isConnected, isInternetReachable } = useInternet();
@@ -68,10 +69,10 @@ export const InternetBottomSheet = () => {
                 <WifiOff size={40} color={colors.danger} />
               </View>
               <Text className="text-light-text dark:text-dark-text text-xl font-bold mb-2 text-center">
-                No Internet Connection
+                {t('common.internetOfflineTitle')}
               </Text>
               <Text className="text-light-muted dark:text-dark-muted text-sm text-center px-4 leading-5">
-                Please check your internet connection and try again.
+                {t('common.internetOfflineDesc')}
               </Text>
             </View>
           )}
@@ -82,10 +83,10 @@ export const InternetBottomSheet = () => {
                 <CheckCircle size={40} color={colors.success} />
               </View>
               <Text className="text-light-text dark:text-dark-text text-xl font-bold mb-2 text-center">
-                Back Online
+                {t('common.internetOnlineTitle')}
               </Text>
               <Text className="text-light-muted dark:text-dark-muted text-sm text-center px-4 leading-5">
-                Your internet connection has been restored.
+                {t('common.internetOnlineDesc')}
               </Text>
             </View>
           )}

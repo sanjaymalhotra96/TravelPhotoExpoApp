@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, Pressable, Image } from 'react-native';
 import { HistoryItem } from '@/constants';
 import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 interface ImageCardProps {
   item: HistoryItem;
@@ -38,7 +39,7 @@ export const ImageCard: React.FC<ImageCardProps> = ({ item, onPress }) => {
           {item.templateName}
         </Text>
         <Text className="text-light-muted dark:text-dark-muted text-xs flex-row items-center">
-          Generated on {formatDate(item.created_at)}
+          {t('common.generatedOn', { date: formatDate(item.created_at) })}
         </Text>
       </View>
 

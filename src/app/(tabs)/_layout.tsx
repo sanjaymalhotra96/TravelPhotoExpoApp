@@ -2,6 +2,7 @@ import React from 'react';
 import { Tabs } from 'expo-router';
 import { useTheme } from '@/hooks/useTheme';
 import { Icons } from '@/theme';
+import { t } from '@/utils/i18n';
 
 export default function TabsLayout() {
   const { colors, isDark } = useTheme();
@@ -28,7 +29,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Studio',
+          title: t('tabs.studio.tabLabel'),
           tabBarIcon: ({ color, size }) => (
             <Icons.Grid size={size} color={color} />
           ),
@@ -38,7 +39,7 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t('tabs.profile.tabLabel'),
           tabBarIcon: ({ color, size }) => (
             <Icons.User size={size} color={color} />
           ),

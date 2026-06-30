@@ -4,6 +4,7 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useRevenueCat } from '@/providers/revenuecat-provider';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from '@/utils/i18n';
 
 // Safely require PurchasesUI to avoid crashing environments where it isn't linked/present (like Expo Go or Web)
 let RevenueCatUI: any = null;
@@ -31,14 +32,14 @@ export default function PaywallRoute() {
           }}
           onPurchaseCompleted={() => {
             refreshSubscription().then(() => {
-              Alert.alert('Success', 'Thank you for your purchase!', [
-                { text: 'OK', onPress: () => router.back() }
+              Alert.alert(t('common.success'), t('paywall.purchaseSuccess'), [
+                { text: t('common.ok'), onPress: () => router.back() }
               ]);
             });
           }}
           onRestoreCompleted={() => {
             refreshSubscription().then(() => {
-              Alert.alert('Success', 'Purchases restored successfully!');
+              Alert.alert(t('common.success'), t('paywall.restoreSuccess'));
             });
           }}
         />
@@ -61,11 +62,11 @@ export default function PaywallRoute() {
       <Ionicons name="alert-circle-outline" size={64} color={colors.primary} />
       
       <Text className="text-2xl font-black text-light-text dark:text-dark-text mt-6 mb-2 text-center">
-        Paywall Unavailable
+        {t('paywall.unavailableTitle')}
       </Text>
       
       <Text className="text-base text-light-muted dark:text-dark-muted text-center mb-8 px-4 leading-relaxed">
-        Unable to load the native subscription screen. Please verify your internet connection or check your RevenueCat dashboard offerings configuration.
+        {t('paywall.unavailableDesc')}
       </Text>
       
       <TouchableOpacity
@@ -74,7 +75,7 @@ export default function PaywallRoute() {
         onPress={() => router.back()}
         activeOpacity={0.8}
       >
-        <Text className="text-white text-base font-bold">Go Back</Text>
+        <Text className="text-white text-base font-bold">{t('paywall.goBack')}</Text>
       </TouchableOpacity>
     </View>
   );

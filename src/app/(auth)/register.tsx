@@ -69,7 +69,7 @@ export default function RegisterScreen() {
       await loginUser({ email: '', provider });
       showToast(provider === 'google' ? t('auth.login.googleSuccessToast') : t('auth.login.appleSuccessToast'), 'success');
     } catch (e: any) {
-      showToast(`OAuth failure: ${e?.message}`, 'error');
+      showToast(t('auth.register.oauthFailure', { error: e?.message || '' }), 'error');
     }
   };
 

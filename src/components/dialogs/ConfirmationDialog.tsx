@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Modal, Pressable } from 'react-native';
+import { t } from '@/utils/i18n';
 
 interface ConfirmationDialogProps {
   visible: boolean;
@@ -16,8 +17,8 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
   visible,
   title,
   description,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText = t('common.confirm'),
+  cancelText = t('common.cancel'),
   confirmVariant = 'brand',
   onConfirm,
   onCancel,
