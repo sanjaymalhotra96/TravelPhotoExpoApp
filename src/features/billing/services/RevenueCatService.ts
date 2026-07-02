@@ -8,6 +8,7 @@ import { StorageService } from '@/shared/services/storage';
 class RevenueCatServiceImpl implements IRevenueCatAdapter {
   private static instance: RevenueCatServiceImpl;
   private isInitialized = false;
+  private activeOperation: Promise<any> | null = null;
 
   private constructor() {}
 
@@ -18,7 +19,71 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     return RevenueCatServiceImpl.instance;
   }
 
-  public async initialize(appUserID?: string): Promise<void> {
+  /**
+   * Serializes all asynchronous RevenueCat operations to prevent native thread dispatcher collisions
+   * and "Cannot enqueue operation in closed dispatcher" crashes on Android.
+   */
+  private async runExclusive<T>(op: () => Promise<T>): Promise<T> {
+    const parentPromise = this.activeOperation;
+    let resolveNext: (() => void) | undefined = undefined;
+    const nextPromise = new Promise<void>((resolve) => {
+      resolveNext = () => resolve();
+    });
+    this.activeOperation = nextPromise;
+
+    if (parentPromise) {
+      try {
+        await parentPromise;
+      } catch (e) {}
+    }
+
+    try {
+      return await op();
+    } finally {
+      if (resolveNext) {
+        (resolveNext as () => void)();
+      }
+      if (this.activeOperation === nextPromise) {
+        this.activeOperation = null;
+      }
+    }
+  }
+
+  // Public Thread-Safe Wrappers
+  public initialize(appUserID?: string): Promise<void> {
+    return this.runExclusive(() => this.initializeInternal(appUserID));
+  }
+
+  public getCustomerInfo(): Promise<CustomerInfo> {
+    return this.runExclusive(() => this.getCustomerInfoInternal());
+  }
+
+  public getOfferings(): Promise<PurchasesOffering[]> {
+    return this.runExclusive(() => this.getOfferingsInternal());
+  }
+
+  public purchasePackage(packageToBuy: any): Promise<CustomerInfo> {
+    return this.runExclusive(() => this.purchasePackageInternal(packageToBuy));
+  }
+
+  public restorePurchases(): Promise<CustomerInfo> {
+    return this.runExclusive(() => this.restorePurchasesInternal());
+  }
+
+  public logOut(): Promise<CustomerInfo> {
+    return this.runExclusive(() => this.logOutInternal());
+  }
+
+  public login(appUserID: string): Promise<{ customerInfo: CustomerInfo; created: boolean }> {
+    return this.runExclusive(() => this.loginInternal(appUserID));
+  }
+
+  public syncRevenueCatUser(): Promise<{ customerInfo: CustomerInfo | null; switched: boolean }> {
+    return this.runExclusive(() => this.syncRevenueCatUserInternal());
+  }
+
+  // Internal Logic Implementations (Lock-Free to prevent deadlocks when calling each other)
+  private async initializeInternal(appUserID?: string): Promise<void> {
     if (this.isInitialized) {
       console.log('[RevenueCatService] initialize: Already initialized. Current App User ID:', appUserID || 'anonymous');
       return;
@@ -64,7 +129,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async getCustomerInfo(): Promise<CustomerInfo> {
+  private async getCustomerInfoInternal(): Promise<CustomerInfo> {
     this.ensureInitialized();
     console.log('[RevenueCatService] getCustomerInfo: Fetching current customer info from live RevenueCat SDK...');
     try {
@@ -83,7 +148,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async getOfferings(): Promise<PurchasesOffering[]> {
+  private async getOfferingsInternal(): Promise<PurchasesOffering[]> {
     this.ensureInitialized();
     console.log('[RevenueCatService] getOfferings: Requesting live offerings from RevenueCat SDK...');
     try {
@@ -153,7 +218,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async purchasePackage(packageToBuy: any): Promise<CustomerInfo> {
+  private async purchasePackageInternal(packageToBuy: any): Promise<CustomerInfo> {
     this.ensureInitialized();
     console.log(`[RevenueCatService] purchasePackage: Initiating live purchase for package: ${packageToBuy.identifier}, Product ID: ${packageToBuy.product?.identifier}`);
     try {
@@ -171,7 +236,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async restorePurchases(): Promise<CustomerInfo> {
+  private async restorePurchasesInternal(): Promise<CustomerInfo> {
     this.ensureInitialized();
     console.log('[RevenueCatService] restorePurchases: Initiating live restore purchases...');
     try {
@@ -188,7 +253,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async logOut(): Promise<CustomerInfo> {
+  private async logOutInternal(): Promise<CustomerInfo> {
     this.ensureInitialized();
     console.log('[RevenueCatService] logOut: Logging out current active user from RevenueCat SDK...');
     try {
@@ -206,7 +271,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async login(appUserID: string): Promise<{ customerInfo: CustomerInfo; created: boolean }> {
+  private async loginInternal(appUserID: string): Promise<{ customerInfo: CustomerInfo; created: boolean }> {
     this.ensureInitialized();
     console.log(`[RevenueCatService] login: Logging in user to RevenueCat SDK with ID: ${appUserID}...`);
     try {
@@ -259,7 +324,7 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
     }
   }
 
-  public async syncRevenueCatUser(): Promise<{
+  private async syncRevenueCatUserInternal(): Promise<{
     customerInfo: CustomerInfo | null;
     switched: boolean;
   }> {
@@ -273,17 +338,17 @@ class RevenueCatServiceImpl implements IRevenueCatAdapter {
         await this.clearSubscriptionData();
 
         // 2. Call Purchases.logOut() to clear current active user session
-        await this.logOut();
+        await this.logOutInternal();
 
         if (currentUserId) {
           // 3. Log in with the new Supabase user ID
-          await this.login(currentUserId);
+          await this.loginInternal(currentUserId);
 
           // 4. Save new user ID to StorageService (MMKV)
           StorageService.setString('last_logged_in_user_id', currentUserId);
 
           // 5. Fetch latest Customer Info
-          const latestInfo = await this.getCustomerInfo();
+          const latestInfo = await this.getCustomerInfoInternal();
           
           console.log(`[RevenueCatService] Live user switch sync complete. Logged in as: ${currentUserId}`);
           return { customerInfo: latestInfo, switched: true };

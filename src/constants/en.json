@@ -20,7 +20,9 @@
     "internetOfflineTitle": "No Internet Connection",
     "internetOfflineDesc": "Please check your internet connection and try again.",
     "internetOnlineTitle": "Back Online",
-    "internetOnlineDesc": "Your internet connection has been restored."
+    "internetOnlineDesc": "Your internet connection has been restored.",
+    "active": "Active",
+    "getPro": "Get Pro"
   },
   "auth": {
     "validation": {
@@ -106,19 +108,19 @@
     }
   },
   "tabs": {
-    "studio": {
-      "title": "Travel Studio",
+    "dashboard": {
+      "title": "Travel Dashboard",
       "chooseDestination": "Choose Destination",
       "subtitle": "Select a scenic category below, add a photo, and teletransport yourself anywhere.",
       "loading": "Retrieving travel catalogs...",
       "error": "Could not load travel destination categories.",
-      "tabLabel": "Studio"
+      "tabLabel": "Dashboard"
     },
     "profile": {
       "title": "Profile Settings",
       "signOutBtn": "Logout",
       "creationsHeader": "Generation History",
-      "emptyCreations": "You haven't generated any travel photos yet. Head to the Studio tab to start!",
+      "emptyCreations": "You haven't generated any travel photos yet. Head to the Dashboard to start!",
       "loading": "Loading profile data...",
       "statsGenerations": "Generations",
       "statsActive": "Active",
@@ -172,6 +174,8 @@
   },
   "settings": {
     "title": "Preferences",
+    "profileSection": "Profile Details",
+    "viewProfile": "View Account & History",
     "subscriptionSection": "Subscription Plan",
     "subscriptionFree": "Free Tier",
     "subscriptionPremium": "Premium Tier",

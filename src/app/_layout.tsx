@@ -192,7 +192,7 @@ function RootLayoutContent() {
       router.replace('/(auth)/login');
     } else if (isAuthenticated && inAuthGroup) {
       console.log('[RootLayout] Redirecting to dashboard: /');
-      router.replace('/(tabs)/');
+      router.replace('/');
     }
   }, [isAuthenticated, isLoading, isRecoveringPassword, segments]);
 
@@ -206,23 +206,23 @@ function RootLayoutContent() {
           try {
             await NavigationBar.setVisibilityAsync('hidden');
             await NavigationBar.setPositionAsync('absolute');
-            await NavigationBar.setBackgroundColorAsync('#00000000');
+            await NavigationBar.setBackgroundColorAsync(COLORS.transparent);
           } catch (e) {}
         })();
       }
     } else {
       // App initialized phase: restore status bar and system navigation bar
       StatusBar.setHidden(false, 'fade');
-      StatusBar.setBarStyle('dark-content');
+      StatusBar.setBarStyle('light-content');
       if (Platform.OS === 'android') {
-        StatusBar.setBackgroundColor(COLORS.white);
+        StatusBar.setBackgroundColor(COLORS.black);
         StatusBar.setTranslucent(false);
         (async () => {
           try {
             await NavigationBar.setVisibilityAsync('visible');
             await NavigationBar.setPositionAsync('relative');
-            await NavigationBar.setBackgroundColorAsync(COLORS.white);
-            await NavigationBar.setButtonStyleAsync('dark');
+            await NavigationBar.setBackgroundColorAsync(COLORS.black);
+            await NavigationBar.setButtonStyleAsync('light');
           } catch (e) {}
         })();
       }
@@ -230,16 +230,17 @@ function RootLayoutContent() {
   }, [isLoading]);
 
   return (
-    <View style={{ flex: 1, backgroundColor: COLORS.white }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.white }}>
+    <View style={{ flex: 1, backgroundColor: COLORS.black }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: COLORS.black }}>
         <StatusBar
-          barStyle="dark-content"
-          backgroundColor={COLORS.white}
+          barStyle="light-content"
+          backgroundColor={COLORS.black}
           translucent={false}
         />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="profile" options={{ headerShown: false }} />
           <Stack.Screen name="generate/[templateId]" options={{ presentation: 'card' }} />
           <Stack.Screen name="generate/polling" options={{ presentation: 'card' }} />
           <Stack.Screen name="result/[jobId]" options={{ presentation: 'card' }} />

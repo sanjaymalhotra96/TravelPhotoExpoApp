@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { API_CONFIG } from '@/constants';
-import { studioRepository } from '../services/studioRepository';
+import { dashboardRepository } from '@/features/dashboard/services/dashboardRepository';
 
 export interface JobStatusDetails {
   id: string;
@@ -17,7 +17,7 @@ export const useJobStatus = (jobId: string | null) => {
     queryKey: ['jobStatus', jobId],
     queryFn: async () => {
       if (!jobId) throw new Error('Job ID is missing');
-      return studioRepository.getJobStatus(jobId);
+      return dashboardRepository.getJobStatus(jobId);
     },
     enabled: !!jobId,
     refetchInterval: (query) => {

@@ -52,6 +52,30 @@ export default function SettingsScreen() {
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-5 pt-6">
         
+        {/* Account Profile Section */}
+        <Text className="text-light-muted dark:text-dark-muted font-bold text-xs uppercase tracking-wider mb-3">
+          {t('settings.profileSection')}
+        </Text>
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            router.push('/profile');
+          }}
+          className="bg-white dark:bg-dark-card border border-light-border dark:border-dark-border rounded-2xl p-4 mb-6 shadow-premium active:opacity-60"
+        >
+          <View className="flex-row items-center justify-between">
+            <View className="flex-row items-center">
+              <View className="bg-purple-100 dark:bg-purple-950/40 p-2.5 rounded-xl mr-3">
+                <Icons.User size={18} color={COLORS.primary} />
+              </View>
+              <Text className="text-light-text dark:text-dark-text font-semibold text-sm">
+                {t('settings.viewProfile')}
+              </Text>
+            </View>
+            <Icons.ChevronRight size={16} className="text-light-muted dark:text-dark-muted" />
+          </View>
+        </Pressable>
+
         {/* Subscription Plan */}
         <Text className="text-light-muted dark:text-dark-muted font-bold text-xs uppercase tracking-wider mb-3">
           {t('settings.subscriptionSection')}
@@ -73,7 +97,7 @@ export default function SettingsScreen() {
                 </View>
               </View>
               <View className="bg-purple-100 dark:bg-purple-900/50 px-3 py-1.5 rounded-full">
-                <Text className="text-purple-600 dark:text-purple-300 font-bold text-xs">Active</Text>
+                <Text className="text-purple-600 dark:text-purple-300 font-bold text-xs">{t('common.active')}</Text>
               </View>
             </View>
           </View>

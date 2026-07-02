@@ -1,12 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import { TravelTemplate } from '@/constants';
-import { studioRepository } from '../services/studioRepository';
+import { dashboardRepository } from '@/features/dashboard/services/dashboardRepository';
 
 export const useTemplates = () => {
   return useQuery<TravelTemplate[], Error>({
     queryKey: ['templates'],
     queryFn: async () => {
-      return studioRepository.getTemplates();
+      return dashboardRepository.getTemplates();
     },
     staleTime: 5 * 60 * 1000,
   });

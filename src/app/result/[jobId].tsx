@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
 import * as Haptics from 'expo-haptics';
-import { studioRepository } from '@/features/studio/services/studioRepository';
+import { dashboardRepository } from '@/features/dashboard/services/dashboardRepository';
 import { ScreenHeader } from '@/shared/components/common/ScreenHeader';
 import { LoadingOverlay } from '@/shared/components/loaders/LoadingOverlay';
 import { Icons, COLORS } from '@/theme';
@@ -51,7 +51,7 @@ export default function ResultScreen() {
   // Fetch template metadata for label display
   const { data: template } = useQuery({
     queryKey: ['template', templateId],
-    queryFn: () => studioRepository.getTemplateById(templateId || ''),
+    queryFn: () => dashboardRepository.getTemplateById(templateId || ''),
     enabled: !!templateId,
   });
 
@@ -118,7 +118,7 @@ export default function ResultScreen() {
   const handleGenerateAgain = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     queryClient.clear();
-    router.replace('/(tabs)');
+    router.replace('/');
   };
 
   return (

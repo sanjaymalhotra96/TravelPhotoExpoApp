@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useGenerateImage } from '@/features/studio/hooks/useGenerateImage';
-import { useJobStatus } from '@/features/studio/hooks/useJobStatus';
+import { useGenerateImage } from '@/features/dashboard/hooks/useGenerateImage';
+import { useJobStatus } from '@/features/dashboard/hooks/useJobStatus';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -12,7 +12,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import { ErrorState } from '@/shared/components/common/ErrorState';
-import { getGenerationParams, clearGenerationParams } from '@/features/studio/store/generationStore';
+import { getGenerationParams, clearGenerationParams } from '@/features/dashboard/store/generationStore';
 import { COLORS } from '@/theme';
 import { t } from '@/utils/i18n';
 

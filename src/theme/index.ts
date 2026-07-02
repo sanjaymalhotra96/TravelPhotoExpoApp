@@ -26,10 +26,11 @@ import {
   FileText,
   UserX,
   History,
+  ArrowRight,
 } from 'lucide-react-native';
 
 export const COLORS = {
-  primary: '#8b5cf6', // Indigo-500
+  primary: '#FF7A52', // Indigo-500
   primaryHover: '#7c3aed',
   secondary: '#ff1f75',
   accent: '#ff1f75',
@@ -39,7 +40,16 @@ export const COLORS = {
   white: '#ffffff',
   black: '#000000',
   google: '#ea4335',
-  
+
+  // Premium theme colors matching user screenshot
+  premiumBg: '#0A0A0C',
+  premiumCard: '#2A2730',
+  premiumAccent: '#FF7A52',
+  transparent: '#00000000',
+  gradientStart: '#FF9E79',
+  gradientEnd: '#FF5B38',
+  gradientShadow: '#FF5B35',
+
   // Default values
   background: '#f8fafc',
   card: '#ffffff',
@@ -55,7 +65,7 @@ export const COLORS = {
     text: '#0f172a',
     textMuted: '#64748b',
   },
-  
+
   // Dark Mode Tokens
   dark: {
     background: '#0f0f15',
@@ -161,4 +171,5 @@ export const Icons = {
   Terms: FileText,
   DeleteAccount: UserX,
   History,
+  ArrowRight,
 };

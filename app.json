@@ -12,12 +12,14 @@
       "backgroundColor": "#ffffff"
     },
     "androidStatusBar": {
-      "translucent": true
+      "barStyle": "light-content",
+      "backgroundColor": "#000000",
+      "translucent": false
     },
     "androidNavigationBar": {
       "visible": "always",
-      "barStyle": "dark-content",
-      "backgroundColor": "#ffffff"
+      "barStyle": "light-content",
+      "backgroundColor": "#000000"
     },
     "ios": {
       "supportsTablet": true,

@@ -3,7 +3,7 @@ import { apiClient } from '@/shared/services/apiClient';
 import * as FileSystem from 'expo-file-system';
 import { Platform } from 'react-native';
 
-export interface IStudioRepository {
+export interface IDashboardRepository {
   getTemplates(): Promise<TravelTemplate[]>;
   getTemplateById(id: string): Promise<TravelTemplate>;
   submitGeneration(templateId: string, imageUri: string): Promise<{ jobId: string; resultUrl?: string }>;
@@ -30,7 +30,7 @@ export const mockJobsMap: Record<string, {
 
 // Helper to convert local image uri to base64
 const localUriToBase64DataUrl = async (rawUri: string): Promise<string> => {
-  console.log('[StudioRepository] Converting image to base64. Raw URI:', rawUri);
+  console.log('[DashboardRepository] Converting image to base64. Raw URI:', rawUri);
   const extMatch = rawUri.split('?')[0].split('.').pop()?.toLowerCase() ?? 'jpg';
   const mimeMap: Record<string, string> = {
     jpg: 'image/jpeg',
@@ -65,7 +65,7 @@ const localUriToBase64DataUrl = async (rawUri: string): Promise<string> => {
 
 // Helper to poll Replicate AI predictions status
 const pollReplicatePrediction = async (predictionId: string, apiKey: string, maxAttempts = 40): Promise<string> => {
-  console.log(`[StudioRepository] Polling Replicate prediction: ${predictionId}`);
+  console.log(`[DashboardRepository] Polling Replicate prediction: ${predictionId}`);
   for (let i = 0; i < maxAttempts; i++) {
     await new Promise((r) => setTimeout(r, 2000));
     const res = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
@@ -88,7 +88,7 @@ const pollReplicatePrediction = async (predictionId: string, apiKey: string, max
   throw new Error('AI generation timed out. Please try again.');
 };
 
-export class StudioRepository implements IStudioRepository {
+export class DashboardRepository implements IDashboardRepository {
   async getTemplates(): Promise<TravelTemplate[]> {
     if (CONFIG.USE_MOCK_API) {
       await new Promise((resolve) => setTimeout(resolve, 800));
@@ -227,4 +227,4 @@ export class StudioRepository implements IStudioRepository {
   }
 }
 
-export const studioRepository = new StudioRepository();
+export const dashboardRepository = new DashboardRepository();

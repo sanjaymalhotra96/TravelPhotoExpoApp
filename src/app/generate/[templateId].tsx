@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useQuery } from '@tanstack/react-query';
-import { studioRepository } from '@/features/studio/services/studioRepository';
+import { dashboardRepository } from '@/features/dashboard/services/dashboardRepository';
 import { ScreenHeader } from '@/shared/components/common/ScreenHeader';
 import { ImagePreview } from '@/shared/components/common/ImagePreview';
-import { ImageSourceDialog } from '@/features/studio/components/ImageSourceDialog';
+import { ImageSourceDialog } from '@/features/dashboard/components/ImageSourceDialog';
 import { ImagePickerHelper, SelectedImage } from '@/utils/imagePicker';
 import { FullScreenLoader } from '@/shared/components/loaders/FullScreenLoader';
 import { COLORS, Icons } from '@/theme';
@@ -21,7 +21,7 @@ export default function GenerateSelectScreen() {
   // Retrieve template context info
   const { data: template, isLoading } = useQuery({
     queryKey: ['template', templateId],
-    queryFn: () => studioRepository.getTemplateById(templateId),
+    queryFn: () => dashboardRepository.getTemplateById(templateId),
   });
 
   const handleSelectCamera = async () => {

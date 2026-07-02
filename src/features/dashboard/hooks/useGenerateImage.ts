@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
-import { studioRepository } from '../services/studioRepository';
+import { dashboardRepository } from '@/features/dashboard/services/dashboardRepository';
 
 export interface GenerateImageParams {
   imageUri: string;
@@ -14,7 +14,7 @@ export interface GenerateImageResponse {
 export const useGenerateImage = () => {
   return useMutation<GenerateImageResponse, Error, GenerateImageParams>({
     mutationFn: async ({ imageUri, templateId }) => {
-      return studioRepository.submitGeneration(templateId, imageUri);
+      return dashboardRepository.submitGeneration(templateId, imageUri);
     },
   });
 };

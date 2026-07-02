@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, Pressable, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { useProfile } from '@/features/profile/hooks/useProfile';
 import { useAuthStore } from '@/features/auth/store/authStore';
 import { HistoryItem } from '@/constants';
@@ -8,10 +10,12 @@ import { ImageViewer } from '@/shared/components/common/ImageViewer';
 import { ConfirmationDialog } from '@/shared/components/dialogs/ConfirmationDialog';
 import { EmptyState } from '@/shared/components/common/EmptyState';
 import { ErrorState } from '@/shared/components/common/ErrorState';
+import { ScreenHeader } from '@/shared/components/common/ScreenHeader';
 import { COLORS, Icons } from '@/theme';
 import { t } from '@/utils/i18n';
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const { data: profileData, isLoading, error, refetch } = useProfile();
   const logoutUser = useAuthStore((state) => state.logout);
 
@@ -60,23 +64,35 @@ export default function ProfileScreen() {
 
   return (
     <View className="flex-1 bg-light-bg dark:bg-dark-bg">
-      {/* Custom Header */}
-      <View className="w-full flex-row items-center justify-between px-5 py-4 border-b border-light-border dark:border-dark-border bg-white dark:bg-dark-card">
-        <Text className="text-light-text dark:text-dark-text text-xl font-bold tracking-tight">
-          {t('tabs.profile.title')}
-        </Text>
-        
-        <Pressable
-          onPress={() => {
-            console.log('[Profile] Header Logout button clicked! Showing confirmation dialog.');
-            setLogoutDialogVisible(true);
-          }}
-          className="flex-row items-center bg-red-50 dark:bg-red-950/20 px-4 py-2.5 rounded-full border border-red-100 dark:border-red-950 active:bg-red-100 dark:active:bg-red-900/35"
-        >
-          <Icons.LogOut size={16} color={COLORS.danger} className="mr-2" />
-          <Text className="text-red-500 font-bold text-xs">{t('tabs.profile.signOutBtn')}</Text>
-        </Pressable>
-      </View>
+      {/* Custom Header with Back Button & Settings/Logout Buttons */}
+      <ScreenHeader
+        title={t('tabs.profile.title')}
+        showBackButton={true}
+        onBackPress={() => router.back()}
+        rightAction={
+          <View className="flex-row items-center gap-3">
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push('/settings');
+              }}
+              className="w-10 h-10 rounded-full bg-slate-100 dark:bg-zinc-800/80 items-center justify-center active:opacity-90"
+            >
+              <Icons.Settings size={20} className="text-light-text dark:text-dark-text" />
+            </Pressable>
+            
+            <Pressable
+              onPress={() => {
+                Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                setLogoutDialogVisible(true);
+              }}
+              className="w-10 h-10 rounded-full bg-red-50 dark:bg-red-950/20 items-center justify-center active:opacity-90"
+            >
+              <Icons.LogOut size={18} color={COLORS.danger} />
+            </Pressable>
+          </View>
+        }
+      />
 
       <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-5 pt-6">
         

@@ -45,7 +45,10 @@ module.exports = {
           light: "#fee2e2",
           DEFAULT: "#ef4444",
           dark: "#dc2626",
-        }
+        },
+        premiumBg: "#0A0A0C",
+        premiumCard: "#2A2730",
+        premiumAccent: "#FF7A52",
       },
       borderRadius: {
         "4xl": "2rem",

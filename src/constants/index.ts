@@ -33,6 +33,20 @@ export interface TravelTemplate {
 
 export const MOCK_TEMPLATES: TravelTemplate[] = [
   {
+    id: 'famous-destinations',
+    name: 'Famous Destinations',
+    category: 'Cities',
+    coverUrl: 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop&q=80',
+    description: 'Iconic landmarks worldwide',
+  },
+  {
+    id: 'natural-photos',
+    name: 'Natural Photos',
+    category: 'Nature',
+    coverUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
+    description: 'Lakes, forests & mountains',
+  },
+  {
     id: 'tokyo-cyberpunk',
     name: 'Tokyo Cyberpunk',
     category: 'Sci-Fi',
@@ -77,6 +91,8 @@ export const MOCK_TEMPLATES: TravelTemplate[] = [
 ];
 
 export const MOCK_GENERATED_IMAGES: Record<string, string> = {
+  'famous-destinations': 'https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=800&auto=format&fit=crop&q=80',
+  'natural-photos': 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80',
   'tokyo-cyberpunk': 'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=800&auto=format&fit=crop&q=80',
   'paris-vintage': 'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=800&auto=format&fit=crop&q=80',
   'bali-paradise': 'https://images.unsplash.com/photo-1552566626-52f8b828add9?w=800&auto=format&fit=crop&q=80',
